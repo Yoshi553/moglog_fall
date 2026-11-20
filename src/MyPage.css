@@ -1,15 +1,114 @@
 /* マイページ全体: ホーム画面と同じ淡い背景・白カード・オレンジ水色トーン */
-.mypage-screen { min-height: 100vh; background: #f7fbfc; }
+.mypage-screen { 
+    min-height: 100vh; 
+    background: #f7fbfc; 
+}
 
 /* プロフィール上部: アイコン、ユーザーID、表示名、編集ボタンを中央配置 */
-.mypage-screen .my-profile { display: grid; grid-template-columns: 1fr; justify-items: center; text-align: center; gap: 6px; margin: 12px 14px 0; padding: 22px 14px 12px; border: 1px solid #edf1f1; border-radius: 18px; background: white; box-shadow: 0 6px 18px rgba(78,123,133,.06); }
-.mypage-screen .my-profile .large-avatar { width: 76px; height: 76px; margin: 0; }
-.mypage-screen .my-profile h2 { margin: 4px 0 2px; font-size: 16px; }
-.mypage-screen .copy-id { border: 0; background: transparent; color: #70838a; padding: 0; font-size: 12px; }.mypage-screen .copy-id span { color: #56a0b1; }.mypage-screen .edit-profile { margin-top: 4px; border: 1px solid #f2c79f; border-radius: 12px; background: #fff5ea; color: #c87542; padding: 8px 12px; font-size: 11px; }
+.mypage-screen .my-profile { 
+    display: grid; 
+    grid-template-columns: 1fr; 
+    justify-items: center; 
+    text-align: center; 
+    gap: 6px; 
+    margin: 12px 14px 0; 
+    padding: 22px 14px 12px; 
+    border: 1px solid #edf1f1; 
+    border-radius: 18px; 
+    background: white; 
+    box-shadow: 0 6px 18px rgba(78,123,133,.06); 
+}
+
+.mypage-screen .my-profile .large-avatar { 
+    width: 76px; 
+    height: 76px; 
+    margin: 0; 
+}
+
+.mypage-screen .my-profile h2 { 
+    margin: 4px 0 2px; 
+    font-size: 16px; 
+}
+
+.mypage-screen .copy-id {
+    border: 0; 
+    background: transparent; 
+    color: #70838a; 
+    padding: 0; 
+    font-size: 12px;
+}
+
+.mypage-screen .copy-id span {
+    color: #56a0b1; 
+}
+
+.mypage-screen .edit-profile {
+    margin-top: 4px; 
+    border: 1px solid #f2c79f; 
+    border-radius: 12px; 
+    background: #fff5ea; 
+    color: #c87542; 
+    padding: 8px 12px; 
+    font-size: 11px; 
+}
 
 /* 好み一覧: 好きな食べ物と辛さ・甘さ・濃さをカード内で整理 */
-.mypage-screen .preference-summary { display: grid; grid-template-columns: repeat(3,1fr); align-items: start; margin: 12px 14px; border: 1px solid #edf1f1; border-radius: 16px; background: white; padding: 14px 10px; box-shadow: 0 6px 18px rgba(78,123,133,.06); }
-.mypage-screen .preference-summary h3 { grid-column: 1/-1; text-align: center; margin: 0 0 8px; }.mypage-screen .preference-summary p { display: flex; flex-direction: column; align-items: center; border-right: 1px solid #edf2f2; margin: 8px 0; font-size: 12px; }.mypage-screen .preference-summary p:last-child { border-right: 0; }.mypage-screen .preference-summary p span { color: #7e9299; }
+/* 好み一覧 */
+.mypage-screen .preference-summary {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  align-items: start;
+  margin: 12px 14px;
+  border: 1px solid #edf1f1;
+  border-radius: 16px;
+  background: white;
+  padding: 14px 10px;
+  box-shadow: 0 6px 18px rgba(78,123,133,.06);
+}
+
+.mypage-screen .preference-summary h3 {
+  grid-column: 1 / -1;
+  text-align: center;
+  margin: 0 0 8px;
+}
+
+/* 好きな食べ物：横幅いっぱい */
+.mypage-screen .favorite-foods {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 8px 4px 14px;
+  border-bottom: 1px solid #edf2f2;
+  font-size: 12px;
+}
+
+/* 辛さ・甘さ・濃さ：横に3つ並べる */
+.mypage-screen .preference-scales {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  padding-top: 12px;
+}
+
+.mypage-screen .preference-scales p {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  border-right: 1px solid #edf2f2;
+  margin: 0;
+  font-size: 12px;
+}
+
+.mypage-screen .preference-scales p:last-child {
+  border-right: 0;
+}
+
+.mypage-screen .preference-summary span {
+  color: #7e9299;
+}
 
 /* フォロー・フォロワー・保存件数: 区切り線付きの3等分カード */
 .mypage-screen .social-counts { display: grid; grid-template-columns: repeat(3,1fr); margin: 12px 14px; border: 1px solid #edf1f1; border-radius: 16px; background: white; box-shadow: 0 6px 18px rgba(78,123,133,.06); }
@@ -17,19 +116,104 @@
 
 /* 投稿一覧: 自分の投稿と保存投稿をスマホで縦並びカードとして表示 */
 .mypage-screen .own-posts,
-.mypage-screen .saved-posts { margin: 12px 14px; border: 1px solid #edf1f1; border-radius: 16px; background: white; padding: 12px; box-shadow: 0 6px 18px rgba(78,123,133,.06); }
+.mypage-screen .saved-posts { 
+    margin: 12px 14px; 
+    border: 1px solid #edf1f1; 
+    border-radius: 16px; 
+    background: white; 
+    padding: 12px; 
+    box-shadow: 0 6px 18px rgba(78,123,133,.06); 
+}
+
 .mypage-screen .own-posts h3,
-.mypage-screen .saved-posts h3 { margin: 0 0 12px; font-size: 15px; text-align: left; }.mypage-screen .own-posts h3 span,
-.mypage-screen .saved-posts h3 span { color: #71aabd; }
+.mypage-screen .saved-posts h3 { 
+    margin: 0 0 12px; 
+    font-size: 15px; 
+    text-align: left; 
+}
+
+.mypage-screen .own-posts h3 span,
+.mypage-screen .saved-posts h3 span {
+     color: #71aabd; 
+}
+
 .mypage-screen .own-posts > div,
-.mypage-screen .saved-posts > div { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 8px; }
+.mypage-screen .saved-posts > div { 
+    display: grid; 
+    grid-template-columns: repeat(2,minmax(0,1fr)); gap: 8px; 
+}
+
 .mypage-screen .own-posts button,
-.mypage-screen .saved-posts button { width: 100%; aspect-ratio: 1; border: 1px solid #edf1f1; border-radius: 14px; padding: 0; overflow: hidden; background: #edf3f3; box-shadow: 0 5px 18px rgba(78,123,133,.07); }
+.mypage-screen .saved-posts button { 
+    width: 100%; 
+    aspect-ratio: 1; 
+    border: 1px solid #edf1f1; 
+    border-radius: 14px; 
+    padding: 0; 
+    overflow: hidden; 
+    background: #edf3f3; 
+    box-shadow: 0 5px 18px rgba(78,123,133,.07); 
+}
+
 .mypage-screen .own-posts button img,
-.mypage-screen .saved-posts button img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.mypage-screen .saved-posts button img {
+    display: block;
+    width: 100%; 
+    height: 100%; 
+    object-fit: cover; 
+}
 
 /* フォロー・フォロワー一覧モーダル: 下から出る縦リスト */
-.social-modal { width: 100%; max-width: 520px; max-height: 82vh; overflow-y: auto; background: white; border-radius: 24px 24px 0 0; padding: 22px 16px 30px; position: relative; }
-.social-modal h2 { margin: 4px 0 14px; text-align: center; }.social-list { display: flex; flex-direction: column; }.social-list button { min-height: 62px; display: grid; grid-template-columns:46px 1fr auto; align-items:center; gap:9px; border:0; border-bottom:1px solid #edf2f2; background:white; text-align:left; color:#52636a; }.small-avatar { display:grid; place-items:center; width:42px; height:42px; border-radius:50%; background:linear-gradient(135deg,#ffe7c9,#cfeff5); color:#66818a; font-weight:900; }.social-list button small { color:#64a7b5; background:#edf8fa; border-radius:12px; padding:5px 8px; }
+.social-modal {
+    width: 100%;
+    max-width: 520px; 
+    max-height: 82vh; 
+    overflow-y: auto; 
+    background: white; 
+    border-radius: 24px 24px 0 0; 
+    padding: 22px 16px 30px; 
+    position: relative; 
+}
+
+.social-modal h2 {
+    margin: 4px 0 14px; 
+    text-align: center; 
+}
+
+.social-list {
+    display: flex; 
+    flex-direction: column; 
+}
+
+.social-list button {
+    min-height: 62px; 
+    display: grid; 
+    grid-template-columns:46px 1fr auto; 
+    align-items:center; 
+    gap:9px;
+    border:0; 
+    border-bottom:1px solid #edf2f2; 
+    background:white; 
+    text-align:left; 
+    color:#52636a; 
+}
+
+.small-avatar {
+    display:grid; 
+    place-items:center; 
+    width:42px; 
+    height:42px; 
+    border-radius:50%; 
+    background:linear-gradient(135deg,#ffe7c9,#cfeff5); 
+    color:#66818a; 
+    font-weight:900; 
+}
+
+.social-list button small {
+    color:#64a7b5; 
+    background:#edf8fa; 
+    border-radius:12px;
+    padding:5px 8px;
+}
 
 @media (min-width:700px) { .social-modal { border-radius:24px; } }

@@ -45,8 +45,13 @@ export default function MyPage({ account, posts, onEditProfile, onOpenSavedPost,
 
     {profile && <section className="preference-summary">
       <h3>私の好み</h3>
-      <p><b>好きな食べ物</b><span>{profile.favoriteFoods || '未設定'}</span></p>
-      {['辛さ','甘さ','濃さ'].map((key) => <p key={key}><b>{key}</b><span>{key === '濃さ' ? ['薄味','普通','濃い味'][profile[key] ?? 1] : ['苦手','やや苦手','普通','やや好き','好き'][profile[key]]}</span></p>)}
+      <div className="favorite-foods">
+            <b>好きな食べ物</b><span>{profile.favoriteFoods || '未設定'}</span>
+      </div>
+
+      <div className="preference-scales">
+        {['辛さ','甘さ','濃さ'].map((key) => <p key={key}><b>{key}</b><span>{key === '濃さ' ? ['薄味','普通','濃い味'][profile[key] ?? 1] : ['苦手','やや苦手','普通','やや好き','好き'][profile[key]]}</span></p>)}
+      </div>
     </section>}
 
     <section className="social-counts">
