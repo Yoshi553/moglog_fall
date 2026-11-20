@@ -1,0 +1,56 @@
+/* ホーム画面全体: 投稿フィードと絞り込み領域の背景 */
+.home-screen { min-height: 100vh; }
+
+/* 投稿絞り込み: 星評価と表示名を横並びの選択欄で絞る */
+.filters { display: flex; gap: 8px; padding: 12px 14px 8px; }
+.filters select { flex: 1; min-width: 0; border: 1px solid var(--line); border-radius: 20px; background: white; color: #66777f; padding: 8px 10px; }
+
+/* 投稿一覧: スマホでは1列の縦スクロールカードとして表示する */
+.feed-grid { display: grid; grid-template-columns: 1fr; gap: 10px; padding: 8px 10px 30px; max-width: 560px; margin: auto; }
+.post-card { min-width: 0; background: white; border: 1px solid #edf1f1; border-radius: 14px; overflow: hidden; box-shadow: 0 5px 18px rgba(78,123,133,.07); }
+
+/* 投稿カード上部: アイコン・表示名と星評価を左右に配置 */
+.post-author { height: 48px; display: flex; align-items: center; justify-content: space-between; padding: 7px 8px; }
+.author-button { border: 0; background: transparent; display: flex; align-items: center; gap: 6px; min-width: 0; padding: 0; color: #4d5d64; }
+.author-button b { max-width: 60px; overflow: hidden; text-overflow: ellipsis; }
+.avatar { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; background: linear-gradient(135deg,#ffe7c9,#cfeff5); color: #66818a; font-weight: 900; }
+.stars { color: #f5a44f; white-space: nowrap; font-size: 12px; letter-spacing: -1px; }
+
+/* 投稿写真: カード幅いっぱいに縦横比を保たず表示する */
+.post-photo { width: 100%; background: #edf4f4; }
+.post-photo img { width: 100%; height: auto; object-fit: cover; display: block; }
+
+/* 投稿アクション: コメント・地図・保存を区切り線付きで3等分 */
+.post-actions { display: flex; height: 54px; align-items: center; border-bottom: 1px solid #f1f4f4; }
+.post-actions button { width: 33.33%; height: 100%; border: 0; background: white; font-size: 19px; }
+.post-action-button { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px; border-right: 1px solid #edf2f2 !important; }
+.post-action-button:last-child { border-right: 0 !important; }
+.post-action-button span { line-height: 20px; }
+.post-action-button small { color: #71858b; font-size: 11px; line-height: 11px; }
+.post-action-button.active-action { background: #ffe8cf !important; box-shadow: inset 0 0 0 1px #f3ad63; }
+.post-action-button span.saved { background: #fff1d9; border-radius: 50%; padding: 1px 4px; }
+
+/* 投稿本文: 通常は2行まで表示し、以降は全文表示ボタンで展開 */
+.post-detail { min-height: 62px; padding: 7px 8px 9px; }
+.post-detail p { margin: 3px 0; font-size: 11px; line-height: 1.55; color: #59666d; }
+.photo-comment { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; overflow: hidden; }
+.photo-comment.expanded { display: block; -webkit-line-clamp: unset; line-clamp: unset; }
+.read-more { border: 0; background: transparent; padding: 2px 0; color: var(--orange-deep); font-size: 10px; }
+
+/* コメント領域: 投稿者以外と自分のコメントを左右に分ける */
+.comments-panel { margin-top: 8px; padding-top: 7px; border-top: 1px solid #edf2f2; max-height: 280px; overflow-y: auto; }
+.chat-row { display: flex; width: 100%; margin: 7px 0; align-items: flex-end; }
+.chat-row.mine { justify-content: flex-end; flex-direction: row-reverse; }
+.chat-row.other { justify-content: flex-start; }
+.chat-avatar { flex: 0 0 18px; width: 18px; height: 18px; font-size: 10px; text-align: center; }
+.chat-row.mine .chat-avatar { margin-left: 6px; }.chat-row.other .chat-avatar { margin-right: 6px; }
+.chat-bubble { max-width: 82%; display: flex; flex-direction: column; gap: 2px; padding: 8px 10px; font-size: 11px; line-height: 1.45; }
+.chat-row.mine .chat-bubble { background: #fff0df; color: #715e4c; border-radius: 14px 14px 4px 14px; }
+.chat-row.other .chat-bubble { background: #edf8fa; color: #53666d; border-radius: 14px 14px 14px 4px; }
+.chat-bubble b { font-size: 10px; }.no-comments { text-align: center; color: #91a0a4; font-size: 11px; }
+.comment-form { display: flex; gap: 4px; margin-top: 6px; }.comment-form input { width: 100%; min-width: 0; border: 1px solid var(--line); border-radius: 10px; padding: 6px; font-size: 11px; }.comment-form button { border: 0; border-radius: 8px; background: var(--blue); color: white; font-size: 10px; }
+
+/* 地図表示: 地図内にお店名とピンをカード内へ表示する */
+.inline-place { display: flex; flex-direction: column; gap: 8px; }.inline-place > b { color: #58747a; }.inline-map { position: relative; height: 150px; overflow: hidden; border-radius: 12px; background: #dff3ee; }.inline-map .road { position: absolute; }.map-pin { position: absolute; z-index: 3; transform: translate(-50%, -85%); font-size: 34px; }
+
+@media (min-width: 700px) { .feed-grid { max-width: 560px; }.post-card { border-radius: 18px; } }
