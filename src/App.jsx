@@ -17,6 +17,7 @@ const seedPosts = [
     image:
       "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=900&h=900&fit=crop",
     location: "とんかつ みずき",
+    city: "千代田区",
     comment:
       "だしが効いた塩ラーメンがとてもおいしい！スープまで飲み干したくなる優しい味でした。お店の方も穏やかで、ひと休みにぴったりです。",
     likes: 18,
@@ -33,6 +34,7 @@ const seedPosts = [
     image:
       "https://images.unsplash.com/photo-1555126634-323283e090fa?w=900&h=900&fit=crop",
     location: "麺屋 そら",
+    city: "千代田区",
     comment: "香ばしいチャーシューと、濃いめのスープが最高。",
     likes: 31,
     comments: [],
@@ -48,6 +50,7 @@ const seedPosts = [
     image:
       "https://images.unsplash.com/photo-1569058242253-92a9c755a0ec?w=900&h=900&fit=crop",
     location: "パン屋 あお",
+    city: "新宿区",
     comment:
       "クロワッサンが外はサクサク、中はふんわり。コーヒーとの相性もよかったです。",
     likes: 12,
@@ -67,6 +70,7 @@ const seedPosts = [
     image:
       "https://images.unsplash.com/photo-1565958011703-44f9829ba187?w=900&h=900&fit=crop",
     location: "フルーツカフェ",
+    city: "渋谷区",
     comment:
       "季節の果物をたっぷり使ったケーキ。甘さ控えめで食べやすかったです。",
     likes: 27,
@@ -592,12 +596,12 @@ function CreatePost({ account, onCancel, onCreate }) {
       rating,
       image,
       location: location || "場所未設定",
+      city,
       comment,
       comments: [],
       saved: false,
       gps,
       pin,
-      city,
     });
   };
 
