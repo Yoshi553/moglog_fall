@@ -148,7 +148,7 @@ function AuthScreen({ onLogin }) {
         <span>ろぐ</span>
       </div>
       <h1 className="brand-name">もぐろぐ</h1>
-      <p className="tagline">おいしいを、やさしく記録しよう</p>
+      <p className="tagline">おいしいを記録しよう</p>
       <form className="auth-card" onSubmit={submit}>
         {mode === "register" ? (
           <>
