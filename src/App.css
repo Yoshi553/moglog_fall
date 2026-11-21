@@ -167,7 +167,7 @@
 }
 
 .setup-screen h1 {
-  font-size: 26px;
+  font-size: 20px;
   color: #4c5b63;
 }
 
@@ -599,6 +599,11 @@
   border-radius: 14px;
 }
 
+.rating-picker p {
+  font-size: 10px !important;
+  color: #676464;
+}
+
 .rating-line {
   position: relative;
   width: 100%;
@@ -609,7 +614,7 @@
 }
 
 .rating-line::before {
-  content: '';
+  content: "";
   position: absolute;
   left: 3%;
   right: 3%;
@@ -664,11 +669,12 @@
   align-items: center;
   margin-top: 3px;
   color: #91a0a4;
-  font-size: 12px;
+  font-size: 13px;
 }
 
 .rating-scale strong {
   color: var(--orange-deep);
+  font-size: 20px !important;
 }
 
 .rating-scale span:last-child {
@@ -704,32 +710,113 @@
 }
 
 /* 投稿本文は、二行目まで表示し、三行目以降を省略する */
-.photo-comment { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; overflow: hidden; }
-.photo-comment.expanded { display: block; -webkit-line-clamp: unset; line-clamp: unset; }
-.post-action-button.active-action { background: #ffe8cf !important; box-shadow: inset 0 0 0 1px #f3ad63; }
-.post-action-button.active-action span { filter: none; }
-.chat-row.owner, .chat-row.mine { flex-direction: row-reverse; }
-.chat-row .chat-avatar { flex: 0 0 18px; width: 18px; height: 18px; font-size: 10px; text-align: center; }
-.chat-row.owner .chat-avatar, .chat-row.mine .chat-avatar { margin-left: 6px; }
-.chat-row.other .chat-avatar { margin-right: 6px; }
-.chat-row.mine .chat-bubble { background: #fff0df; border-radius: 14px 14px 4px 14px; }
-.chat-row.other .chat-bubble { background: #edf8fa; border-radius: 14px 14px 14px 4px; }
-.map-pin { position: absolute; z-index: 3; transform: translate(-50%, -85%); font-size: 34px; }
-.rating-line { direction: ltr; }
-.rating-line::before { direction: ltr; }
+.photo-comment {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+}
+.photo-comment.expanded {
+  display: block;
+  -webkit-line-clamp: unset;
+  line-clamp: unset;
+}
+.post-action-button.active-action {
+  background: #ffe8cf !important;
+  box-shadow: inset 0 0 0 1px #f3ad63;
+}
+.post-action-button.active-action span {
+  filter: none;
+}
+.chat-row.owner,
+.chat-row.mine {
+  flex-direction: row-reverse;
+}
+.chat-row .chat-avatar {
+  flex: 0 0 18px;
+  width: 18px;
+  height: 18px;
+  font-size: 10px;
+  text-align: center;
+}
+.chat-row.owner .chat-avatar,
+.chat-row.mine .chat-avatar {
+  margin-left: 6px;
+}
+.chat-row.other .chat-avatar {
+  margin-right: 6px;
+}
+.chat-row.mine .chat-bubble {
+  background: #fff0df;
+  border-radius: 14px 14px 4px 14px;
+}
+.chat-row.other .chat-bubble {
+  background: #edf8fa;
+  border-radius: 14px 14px 14px 4px;
+}
+.map-pin {
+  position: absolute;
+  z-index: 3;
+  transform: translate(-50%, -85%);
+  font-size: 34px;
+}
+.rating-line {
+  direction: ltr;
+}
+.rating-line::before {
+  direction: ltr;
+}
 
 /* マイページは中央のプロフィールを軸に、スマホでも読みやすく配置する */
-.mypage-screen .my-profile { grid-template-columns: 1fr; justify-items: center; text-align: center; gap: 6px; padding: 22px 14px 10px; }
-.mypage-screen .my-profile .large-avatar { grid-row: 1; width: 76px; height: 76px; }
-.mypage-screen .my-profile > div { grid-row: 2; }
-.mypage-screen .my-profile h2 { font-size: 16px; }
-.mypage-screen .copy-id { color: #70838a; }
-.mypage-screen .edit-profile { grid-row: 3; margin-top: 4px; width: auto; justify-self: end; }
-.mypage-screen .preference-summary { display: grid; grid-template-columns: 1fr 1fr 1fr; align-items: start; }
-.mypage-screen .preference-summary h3 { grid-column: 1 / -1; text-align: center; }
-.mypage-screen .preference-summary p { flex-direction: column; align-items: center; border-right: 1px solid #edf2f2; margin: 8px 0; }
-.mypage-screen .preference-summary p:last-child { border-right: 0; }
-.mypage-screen .social-counts { border: 1px solid #edf2f2; }
+.mypage-screen .my-profile {
+  grid-template-columns: 1fr;
+  justify-items: center;
+  text-align: center;
+  gap: 6px;
+  padding: 22px 14px 10px;
+}
+.mypage-screen .my-profile .large-avatar {
+  grid-row: 1;
+  width: 76px;
+  height: 76px;
+}
+.mypage-screen .my-profile > div {
+  grid-row: 2;
+}
+.mypage-screen .my-profile h2 {
+  font-size: 16px;
+}
+.mypage-screen .copy-id {
+  color: #70838a;
+}
+.mypage-screen .edit-profile {
+  grid-row: 3;
+  margin-top: 4px;
+  width: auto;
+  justify-self: end;
+}
+.mypage-screen .preference-summary {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  align-items: start;
+}
+.mypage-screen .preference-summary h3 {
+  grid-column: 1 / -1;
+  text-align: center;
+}
+.mypage-screen .preference-summary p {
+  flex-direction: column;
+  align-items: center;
+  border-right: 1px solid #edf2f2;
+  margin: 8px 0;
+}
+.mypage-screen .preference-summary p:last-child {
+  border-right: 0;
+}
+.mypage-screen .social-counts {
+  border: 1px solid #edf2f2;
+}
 /* マイページの投稿一覧をホーム画面と同じ1列表示にする */
 .mypage-screen .own-posts h3,
 .mypage-screen .saved-posts h3 {
@@ -765,7 +852,9 @@
 }
 
 /* マイページ全体: 他ページと同じ白カード・オレンジ・水色トーンへ統一する */
-.mypage-screen { background: #f7fbfc; }
+.mypage-screen {
+  background: #f7fbfc;
+}
 .mypage-screen .my-profile,
 .mypage-screen .preference-summary,
 .mypage-screen .social-counts,
@@ -775,23 +864,78 @@
   border: 1px solid #edf2f1;
   box-shadow: 0 6px 18px rgba(78, 123, 133, 0.06);
 }
-.mypage-screen .my-profile { margin: 12px 14px 0; border-radius: 18px; }
-.mypage-screen .preference-summary { border-radius: 16px; }
-.mypage-screen .social-counts { border-radius: 16px; }
+.mypage-screen .my-profile {
+  margin: 12px 14px 0;
+  border-radius: 18px;
+}
+.mypage-screen .preference-summary {
+  border-radius: 16px;
+}
+.mypage-screen .social-counts {
+  border-radius: 16px;
+}
 .mypage-screen .own-posts,
-.mypage-screen .saved-posts { margin: 12px 14px; border-radius: 16px; padding: 12px; }
-.mypage-screen .edit-profile { color: #c87542; border-color: #f2c79f; background: #fff5ea; }
+.mypage-screen .saved-posts {
+  margin: 12px 14px;
+  border-radius: 16px;
+  padding: 12px;
+}
+.mypage-screen .edit-profile {
+  color: #c87542;
+  border-color: #f2c79f;
+  background: #fff5ea;
+}
 
-.inline-place { display: flex; flex-direction: column; gap: 8px; }
-.inline-place > b { color: #58747a; }
-.inline-map { position: relative; height: 150px; overflow: hidden; border-radius: 12px; background: #dff3ee; }
-.inline-map .road { position: absolute; }
-.no-comments { text-align: center; color: #91a0a4; font-size: 11px; }
+.inline-place {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.inline-place > b {
+  color: #58747a;
+}
+.inline-map {
+  position: relative;
+  height: 150px;
+  overflow: hidden;
+  border-radius: 12px;
+  background: #dff3ee;
+}
+.inline-map .road {
+  position: absolute;
+}
+.no-comments {
+  text-align: center;
+  color: #91a0a4;
+  font-size: 11px;
+}
 
-.saved-detail-modal.active-surface { background: #fffaf4; border: 2px solid #f6b96f; }
-.saved-detail-modal.active-surface .saved-detail-copy { background: #fffaf4; }
-.saved-actions { display: grid; grid-template-columns: 1fr 1fr; border-top: 1px solid #f1e5d7; }
-.saved-actions button { height: 52px; border: 0; border-right: 1px solid #f1e5d7; background: white; font-size: 20px; }
-.saved-actions button:last-child { border-right: 0; }
-.saved-actions button.active-action { background: #f7b66f; }
-.saved-photo-comment { line-height: 1.7; color: #65757b; }
+.saved-detail-modal.active-surface {
+  background: #fffaf4;
+  border: 2px solid #f6b96f;
+}
+.saved-detail-modal.active-surface .saved-detail-copy {
+  background: #fffaf4;
+}
+.saved-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border-top: 1px solid #f1e5d7;
+}
+.saved-actions button {
+  height: 52px;
+  border: 0;
+  border-right: 1px solid #f1e5d7;
+  background: white;
+  font-size: 20px;
+}
+.saved-actions button:last-child {
+  border-right: 0;
+}
+.saved-actions button.active-action {
+  background: #f7b66f;
+}
+.saved-photo-comment {
+  line-height: 1.7;
+  color: #65757b;
+}

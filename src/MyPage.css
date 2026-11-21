@@ -35,7 +35,7 @@
     background: transparent; 
     color: #70838a; 
     padding: 0; 
-    font-size: 12px;
+    font-size: px;
 }
 
 .mypage-screen .copy-id span {
@@ -107,7 +107,8 @@
 }
 
 .mypage-screen .preference-summary span {
-  color: #7e9299;
+  color: #52666d;
+  font-weight: 700;
 }
 
 /* フォロー・フォロワー・保存件数: 区切り線付きの3等分カード */
@@ -163,6 +164,19 @@
     object-fit: cover; 
 }
 
+/* 好み編集ヘッダーと表示名モーダル */
+.preference-header { grid-column: 1/-1; display:flex; justify-content:center; align-items:center; gap:8px; }.preference-header h3 { margin:0; }.preference-header button { border:1px solid #f2c79f; border-radius:10px; background:#fff5ea; color:#c87542; padding:5px 9px; font-size:11px; }
+.name-edit-modal { width:min(360px,calc(100% - 32px)); background:white; border-radius:20px; padding:28px 20px 20px; text-align:center; }.name-edit-modal h2 { margin:0 0 16px; }.name-edit-modal input { width:100%; border:1px solid #dde8ea; border-radius:12px; padding:12px; margin-bottom:12px; }
+
+/* フォロー・フォロワーの操作ボタンと申請一覧 */
+.social-modal-header { display:flex; justify-content:center; align-items:center; gap:10px; }.social-modal-header h2 { margin:0; }.friend-add-button,.friend-request-button { border:0; border-radius:12px; background:#fff0df; color:#c87542; padding:7px 9px; font-size:11px; }.friend-search { display:grid; grid-template-columns:1fr auto; gap:8px; margin:12px 0; }.friend-search input { min-width:0; border:1px solid #dde8ea; border-radius:12px; padding:10px; }.friend-search button { border:0; border-radius:12px; background:var(--orange); color:white; }.friend-message { text-align:center; color:#64a7b5; font-size:12px; }.friend-request-row { display:grid; grid-template-columns:42px 1fr auto auto; align-items:center; gap:8px; border-bottom:1px solid #edf2f2; padding:8px 0; }.friend-request-row button { border:0; border-radius:10px; padding:7px 9px; }.friend-request-row .accept { background:#fff0df; color:#c87542; }.friend-request-row .reject { background:#edf2f2; color:#718087; }
+
+/* 保存投稿カード: ホーム投稿と同じ文字色・サイズ・アクション形式 */
+.saved-post-card { grid-column:1/-1; overflow:hidden; border:1px solid #edf1f1; border-radius:14px; background:white; }.saved-post-photo { width:100%; aspect-ratio:auto; border:0; padding:0; background:#edf3f3; }.saved-post-photo img { width:100%!important; height:auto!important; max-height:420px; object-fit:cover!important; }.saved-post-copy { min-height:62px; padding:7px 8px 9px; }.saved-post-copy b { color:#4d5d64; }.saved-post-stars { margin-left:8px; color:#f5a44f; font-size:12px; }.saved-post-copy p { margin:3px 0; font-size:11px; line-height:1.55; color:#59666d; }.saved-post-actions { display:grid; grid-template-columns:repeat(3,1fr); height:54px; border-top:1px solid #edf1f1; }.saved-post-actions button { border:0; border-right:1px solid #edf2f2; background:white; font-size:19px; }.saved-post-actions button:last-child { border-right:0; }.saved-post-actions small { color:#71858b; font-size:11px; }.saved-post-actions button.saved { background:#fff4e7; }
+
+/* 保存投稿を自分の投稿より上に表示 */
+.mypage-screen .saved-posts { order:1; }.mypage-screen .own-posts { order:2; }.mypage-screen { display:flex; flex-direction:column; }
+
 /* フォロー・フォロワー一覧モーダル: 下から出る縦リスト */
 .social-modal {
     width: 100%;
@@ -217,3 +231,7 @@
 }
 
 @media (min-width:700px) { .social-modal { border-radius:24px; } }
+
+/* 好み項目のラベルと好きな食べ物も濃い文字で読みやすく表示する */
+.mypage-screen .favorite-foods b,
+.mypage-screen .preference-scales b { color: #40545b; font-weight: 800; }
