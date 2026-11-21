@@ -242,12 +242,16 @@ export default function MyPage({
       </section>
 
       <section className="own-posts">
-        <div className="own-post-header"><h3>自分の投稿 <span>{ownPosts.length}</span></h3><button className="delete-mode-button" onClick={toggleDeleteMode}>{deleteMode ? "キャンセル" : "削除"}</button></div>
-        <div>
-          {deleteMode && <button className="delete-selected-button" onClick={handleDeleteSelected} disabled={selectedPosts.length === 0}>選択した投稿を削除</button>}
+        <div className="own-post-header">
+          <h3>{deleteMode ? "自分の投稿" : <>自分の投稿 <span>{ownPosts.length}</span></>}</h3>
+          {deleteMode ? (
+            <div className="own-delete-actions"><button className="delete-selected-button" onClick={handleDeleteSelected} disabled={selectedPosts.length === 0}>削除</button><button className="delete-mode-button" onClick={toggleDeleteMode}>キャンセル</button></div>
+          ) : (
+            <button className="delete-mode-button" onClick={toggleDeleteMode}>削除</button>
+          )}
         </div>
         <div>{ownPosts.length ? ownPosts.map((post) => (
-          <div className="own-post-item" key={post.id}>
+          <div className={`own-post-item ${selectedPosts.includes(post.id) ? "selected" : ""}`} key={post.id}>
             <button className="own-post-image" onClick={() => deleteMode ? toggleSelectPost(post.id) : onOpenOwnPost(post)}>
               <img src={post.image} alt={`${post.location}の投稿`} />
               {deleteMode && <span className="post-check">{selectedPosts.includes(post.id) ? "✓" : ""}</span>}

@@ -488,7 +488,7 @@
 /* 好み項目のラベルと好きな食べ物も濃い文字で読みやすく表示する */
 .mypage-screen .favorite-foods b,
 .mypage-screen .preference-scales b {
-  color: #40545b;
+  color: rgb(237, 134, 72);
   font-weight: 800;
 }
 
@@ -496,7 +496,7 @@
 .header-logout {
   border: 1px solid #efddd8;
   border-radius: 12px;
-  background: #fff9f7;
+  background: #f2949156;
   color: #b95f50;
   padding: 6px 7px;
   font-size: 11px;
@@ -604,6 +604,8 @@
 .own-post-select,
 .own-post-delete {
   border: 1px solid #efddd8;
+  height: 28px;
+  width: 35px;
   border-radius: 10px;
   background: #fff9f7;
   color: #b95f50;
@@ -654,6 +656,7 @@
 .delete-mode-button,
 .delete-selected-button {
   border: 1px solid #efddd8;
+  height: 28px;
   border-radius: 10px;
   background: #fff9f7;
   color: #b95f50;
@@ -681,4 +684,28 @@
   border-radius: 50%;
   background: var(--orange);
   color: white;
+}
+
+/* 自分の投稿見出し: 通常は件数を表示し、削除モードは削除・キャンセルを右側へ並べる */
+.own-delete-actions { display:flex; align-items:center; gap:6px; }
+.own-delete-actions .delete-selected-button { width:auto; margin:0; }
+.own-delete-actions .delete-mode-button { margin:0; }
+
+/* 削除モード: 投稿右上へ丸いチェックマークを表示し、選択した投稿だけ濃い枠を付ける */
+.own-post-item.selected { border:3px solid var(--orange); }.own-post-item .post-check { position:absolute; right:7px; top:7px; width:24px; height:24px; display:grid; place-items:center; border-radius:50%; background:var(--orange); color:white; font-weight:800; }
+
+/* 自分の投稿の削除ボタン: 見出し文字より少し大きい薄赤ボタン */
+.own-post-header > .delete-mode-button,
+.own-delete-actions .delete-selected-button {
+  min-width: 44px !important;
+  min-height: 28px !important;
+  border: 1px solid #efbfb8 !important;
+  border-radius: 9px !important;
+  background: #ffe9e6 !important;
+  color: #a94f43 !important;
+  padding: 5px 8px !important;
+  font-size: 11px !important;
+  line-height: 1.1 !important;
+  font-weight: 800 !important;
+  box-shadow: none !important;
 }
