@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import exifr from "exifr";
 import "./Common.css";
+import LocationMap, { ReverseLocationName, getCityName } from "./LocationMap.jsx";
 import { heicTo } from "heic-to";
 import Home from "./Home.jsx";
 import MyPage, { SocialListModal } from "./MyPage.jsx";
@@ -401,20 +403,8 @@ function LegacyPostCard({
         )}
         {activeAction === "map" && (
           <div className="inline-place">
-            <b>{post.location}</b>
-            <div className="inline-map">
-              <span className="road r1" />
-              <span className="road r2" />
-              <span
-                className="map-pin"
-                style={{
-                  left: `${post.pin?.x || 50}%`,
-                  top: `${post.pin?.y || 50}%`,
-                }}
-              >
-                📍
-              </span>
-            </div>
+            <b><ReverseLocationName post={post} /></b>
+            <LocationMap post={post} className="inline-location-map" />
           </div>
         )}
       </div>
@@ -499,12 +489,44 @@ function LegacyHome({
 function CreatePost({ account, onCancel, onCreate }) {
   const [image, setImage] = useState("");
   const [location, setLocation] = useState("");
+  const [city, setCity] = useState("");
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState("");
+  const [gps, setGps] = useState(null);
+  const [pin, setPin] = useState(null);
+  const [locationStatus, setLocationStatus] = useState("写真を選ぶと位置情報を確認できます");
+
+  const selectPosition = async (position) => {
+    setPin(position);
+    setGps(position);
+    setLocationStatus("位置情報が設定されています。ピンをドラッグして調整できます。");
+    setCity(await getCityName(position));
+  };
 
   const chooseImage = async (event) => {
     const file = event.target.files?.[0];
     if (!file) return;
+
+    try {
+      const position = await exifr.gps(file);
+      if (position?.latitude != null && position?.longitude != null) {
+        const photoPosition = { latitude: position.latitude, longitude: position.longitude };
+        setGps(photoPosition);
+        setPin(photoPosition);
+        setCity(await getCityName(photoPosition));
+        setLocationStatus("写真から位置情報を取得しました。ピンをドラッグして調整できます。");
+      } else {
+        setGps(null);
+        setPin(null);
+        setCity("");
+        setLocationStatus("この写真には位置情報がありません。地図をタップしてピンを設定できます。");
+      }
+    } catch {
+      setGps(null);
+      setPin(null);
+      setCity("");
+      setLocationStatus("位置情報を読み取れませんでした。地図をタップしてピンを設定できます。");
+    }
 
     let uploadFile = file;
 
@@ -573,7 +595,9 @@ function CreatePost({ account, onCancel, onCreate }) {
       comment,
       comments: [],
       saved: false,
-      pin: { x: 50, y: 50 },
+      gps,
+      pin,
+      city,
     });
   };
 
@@ -604,6 +628,40 @@ function CreatePost({ account, onCancel, onCreate }) {
             placeholder="例：俺の生きる道"
           />
         </label>
+        <label>
+          市区町村（任意）
+          <input
+            value={city}
+            onChange={(e) => setCity(e.target.value)}
+            placeholder="例：渋谷区"
+          />
+        </label>
+        <div className="location-picker">
+          <b>位置情報</b>
+          <p className="location-message">{locationStatus}</p>
+          {gps && (
+            <>
+              <small className="gps-coordinate">
+                緯度 {gps.latitude.toFixed(6)} / 経度 {gps.longitude.toFixed(6)}
+              </small>
+              <small className="reverse-address">
+                <ReverseLocationName
+                  post={{ location, gps }}
+                  position={pin}
+                  fallback="住所を取得中..."
+                />
+              </small>
+            </>
+          )}
+          <div className="leaflet-location-map" aria-label="地図上のピン。タップまたはドラッグで位置を変更できます">
+            <LocationMap
+              position={pin}
+              editable
+              onPositionChange={selectPosition}
+              className="create-location-map"
+            />
+          </div>
+        </div>
         <div className="rating-picker">
           <b>評価</b>
           <p>0~5まで0.5刻みで選択</p>
@@ -652,7 +710,11 @@ function ProfileModal({ post, onClose }) {
     甘さ: 3,
     濃さ: 1,
   };
-  const spicyLabels = ["苦手", "やや苦手", "普通", "やや好き", "好き"];
+  const preferenceLabels = {
+    辛さ: ["苦手", "やや苦手", "普通", "やや好き", "好き"],
+    甘さ: ["苦手", "やや苦手", "普通", "やや好き", "好き"],
+    濃さ: ["薄味", "やや薄味", "普通", "やや濃い味", "濃い味"],
+  };
   return (
     <div className="overlay" onClick={onClose}>
       <section className="profile-modal" onClick={(e) => e.stopPropagation()}>
@@ -663,23 +725,14 @@ function ProfileModal({ post, onClose }) {
         <h2>{post.name}</h2>
         <h3>好きな食べ物</h3>
         <p>{profile.favoriteFoods || "未設定"}</p>
-        {["辛さ", "甘さ", "濃さ"].map((key) => (
-          <div className="profile-meter" key={key}>
-            <b>{key}</b>
-            <span>
-              {key === "濃さ"
-                ? ["薄味", "普通", "濃い味"][profile[key] ?? 1]
-                : spicyLabels[profile[key] ?? 2]}
-            </span>
-            <div>
-              <i
-                style={{
-                  width: `${key === "濃さ" ? ((profile[key] ?? 1) + 1) * 33.33 : ((profile[key] ?? 2) + 1) * 20}%`,
-                }}
-              />
+        <div className="profile-preference-grid">
+          {["辛さ", "甘さ", "濃さ"].map((key) => (
+            <div key={key}>
+              <b>{key}</b>
+              <span>{preferenceLabels[key][profile[key] ?? 2]}</span>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </section>
     </div>
   );
@@ -692,20 +745,8 @@ function MapModal({ post, onClose }) {
         <button className="modal-close" onClick={onClose}>
           ×
         </button>
-        <h2>{post.location}</h2>
-        <div className="big-map">
-          <span className="road r1" />
-          <span className="road r2" />
-          <span
-            className="map-pin"
-            style={{
-              left: `${post.pin?.x || 50}%`,
-              top: `${post.pin?.y || 50}%`,
-            }}
-          >
-            📍
-          </span>
-        </div>
+        <h2><ReverseLocationName post={post} /></h2>
+        <LocationMap post={post} className="big-location-map" />
       </section>
     </div>
   );
@@ -735,7 +776,7 @@ function SavedPostModal({ post, onClose, onComment, accountName, onSave }) {
         <div className="saved-detail-copy">
           <b>{post.name}</b>
           <Stars value={post.rating} />
-          <h3>{post.location}</h3>
+          <h3><ReverseLocationName post={post} /></h3>
           {activeAction === "photo" && (
             <p className="saved-photo-comment">
               {post.comment || "コメントはありません"}
@@ -773,20 +814,8 @@ function SavedPostModal({ post, onClose, onComment, accountName, onSave }) {
           )}
           {activeAction === "map" && (
             <div className="inline-place">
-              <b>{post.location}</b>
-              <div className="inline-map">
-                <span className="road r1" />
-                <span className="road r2" />
-                <span
-                  className="map-pin"
-                  style={{
-                    left: `${post.pin?.x || 50}%`,
-                    top: `${post.pin?.y || 50}%`,
-                  }}
-                >
-                  📍
-                </span>
-              </div>
+              <b><ReverseLocationName post={post} /></b>
+              <LocationMap post={post} className="inline-location-map" />
             </div>
           )}
         </div>

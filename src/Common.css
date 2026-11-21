@@ -412,6 +412,95 @@ button {
   text-align: right;
 }
 
+/* 投稿作成: 写真から取得した位置の確認とピン調整 */
+.location-picker {
+  margin: 18px 0;
+}
+.location-picker > b {
+  display: block;
+  margin-bottom: 8px;
+}
+.location-picker .location-message {
+  margin: 0 0 8px;
+  border-radius: 10px;
+}
+.gps-coordinate {
+  display: block;
+  margin: 0 0 8px;
+  color: #66818b;
+  font-size: 12px;
+}
+.location-map {
+  touch-action: none;
+  cursor: crosshair;
+  user-select: none;
+}
+.editable-pin {
+  cursor: grab;
+  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.18));
+}
+
+/* 地図プレビューのサイズと道路表示 */
+.location-picker .mini-map {
+  position: relative;
+  height: 150px;
+  margin: 0 0 16px;
+  overflow: hidden;
+  border-radius: 14px;
+  background: #dff3ee;
+}
+.location-picker .mini-map .road {
+  position: absolute;
+  width: 140%;
+  height: 18px;
+  left: -20%;
+  top: 50%;
+  background: #fffaf1;
+  transform: rotate(18deg);
+}
+.location-picker .mini-map .road.r2 {
+  top: 28%;
+  transform: rotate(-32deg);
+}
+.location-picker .pin-dot {
+  position: absolute;
+  z-index: 3;
+  font-size: 28px;
+  transform: translate(-50%, -85%);
+}
+
+/* 共通 Leaflet / OpenStreetMap 地図 */
+.location-leaflet-map {
+  width: 100%;
+  height: 220px;
+  overflow: hidden;
+  border-radius: 14px;
+  background: #dff3ee;
+}
+.location-leaflet-map .leaflet-container {
+  width: 100%;
+  height: 100%;
+  font-family: inherit;
+}
+.location-leaflet-map.big-location-map {
+  height: 330px;
+}
+.location-leaflet-map.inline-location-map {
+  height: 180px;
+  margin-top: 8px;
+}
+.location-leaflet-map.create-location-map {
+  height: 220px;
+}
+.moglog-location-pin {
+  border: 0;
+  background: transparent;
+  font-size: 28px;
+  line-height: 32px;
+  text-align: center;
+  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.22));
+}
+
 /* 共通モーダル */
 .overlay {
   position: fixed;
@@ -419,7 +508,7 @@ button {
   inset: 0;
   background: rgba(61, 78, 82, 0.28);
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   justify-content: center;
   backdrop-filter: blur(3px);
 }
@@ -435,6 +524,7 @@ button {
   padding: 26px 24px 36px;
   text-align: center;
   position: relative;
+  border: 2px solid #b9dde5;
 }
 .modal-close {
   position: absolute;
@@ -500,6 +590,8 @@ button {
 .saved-detail-modal {
   padding: 0;
   text-align: left;
+  border: 2px solid #b9dde5;
+  border-radius: 24px;
 }
 .saved-detail-modal > img {
   width: 100%;
@@ -574,6 +666,13 @@ button {
   border-radius: 20px;
   padding: 10px 15px;
   font-size: 12px;
+}
+.reverse-address {
+  display: block;
+  margin: 0 0 8px;
+  color: #5f777d;
+  font-size: 12px;
+  line-height: 1.5;
 }
 @media (min-width: 700px) {
   .overlay {

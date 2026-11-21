@@ -1,5 +1,6 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import "./Home.css";
+import LocationMap, { ReverseLocationName, getCityName, getPostPosition } from "./LocationMap.jsx";
 
 /* 共通ヘッダー: ホーム画面のタイトルと投稿ボタンを表示する */
 function Header({ title, right, onBack }) {
@@ -142,20 +143,8 @@ function PostCard({ post, onSave, onComment, onProfile, onMap, accountName }) {
 
         {activeAction === "map" && (
           <div className="inline-place">
-            <b>{post.location}</b>
-            <div className="inline-map">
-              <span className="road r1" />
-              <span className="road r2" />
-              <span
-                className="map-pin"
-                style={{
-                  left: `${post.pin?.x || 50}%`,
-                  top: `${post.pin?.y || 50}%`,
-                }}
-              >
-                📍
-              </span>
-            </div>
+            <b><ReverseLocationName post={post} /></b>
+            <LocationMap post={post} className="inline-location-map" />
           </div>
         )}
       </div>
@@ -175,14 +164,34 @@ export default function Home({
 }) {
   const [ratingFilter, setRatingFilter] = useState("all");
   const [peopleFilter, setPeopleFilter] = useState("all");
+  const [locationFilter, setLocationFilter] = useState("all");
+  const [cityByPost, setCityByPost] = useState({});
   const people = useMemo(
     () => ["all", ...new Set(posts.map((post) => post.name))],
     [posts],
   );
+  useEffect(() => {
+    let cancelled = false;
+    Promise.all(posts.map(async (post) => {
+      if (post.city) return [post.id, post.city];
+      const position = getPostPosition(post);
+      const city = position ? await getCityName(position) : "";
+      return [post.id, city || "市区町村未設定"];
+    })).then((entries) => {
+      if (!cancelled) setCityByPost(Object.fromEntries(entries));
+    });
+    return () => { cancelled = true; };
+  }, [posts]);
+
+  const locations = useMemo(
+    () => ["all", ...new Set(posts.map((post) => cityByPost[post.id]).filter(Boolean))],
+    [posts, cityByPost],
+  );
   const filtered = posts.filter(
     (post) =>
       (ratingFilter === "all" || post.rating === Number(ratingFilter)) &&
-      (peopleFilter === "all" || post.name === peopleFilter),
+      (peopleFilter === "all" || post.name === peopleFilter) &&
+      (locationFilter === "all" || cityByPost[post.id] === locationFilter),
   );
 
   return (
@@ -216,6 +225,17 @@ export default function Home({
           {people.map((person) => (
             <option key={person} value={person}>
               {person === "all" ? "すべての人" : person}
+            </option>
+          ))}
+        </select>
+        <select
+          value={locationFilter}
+          onChange={(event) => setLocationFilter(event.target.value)}
+          aria-label="場所で絞り込み"
+        >
+          {locations.map((location) => (
+            <option key={location} value={location}>
+              {location === "all" ? "すべての市" : location}
             </option>
           ))}
         </select>
