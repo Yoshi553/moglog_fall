@@ -1,3 +1,19 @@
+/*
+ * 共通CSSの役割
+ * :rootの変数はオレンジ・水色・文字色・罫線色を画面全体で再利用するためのデザイントークン。
+ * .app-shellは画面全体の最小高さと下ナビゲーション分の余白、淡い背景色を決める。
+ * .topbarは画面上部の固定ヘッダー。左右に戻る／ログアウト、中央に画面タイトルを配置する。
+ * .bottom-navは画面下部を固定し、ホームとマイページを中央寄せのボタンへ切り替える。
+ * .auth-screen/.auth-cardは穏やかなグラデーションと白カードでログイン画面を構成する。
+ * .setup-screen/.scale-optionsは好み設定画面と苦手・普通・好きの選択ボタンを整える。
+ * .strength-optionsは濃さを薄味・やや薄・普通・やや濃い・濃い味の5項目で横一列表示する。
+ * .create-screen/.create-form/.photo-pickerは投稿作成画面の写真選択と入力欄をスマホ幅へ収める。
+ * .rating-line/.rating-dotは0〜5を直線上へ並べ、整数点を大きく、0.5点を小さく表示する。
+ * .overlayは画面全体を半透明で覆い、モーダルを画面下部または中央へ表示する。
+ * .saved-detail-modal/.modal-closeは保存投稿詳細と常に右上へ固定する×ボタンのレイアウトを決める。
+ * .saved-detail-modal > .modal-closeはstickyを使いスクロール中も×ボタンを投稿右上へ残す。
+ */
+
 /* 共通カラー: ホーム・マイページ・ログイン画面で共有するオレンジと水色 */
 :root {
   --orange: #f6a85f;
@@ -280,7 +296,10 @@ button {
   color: var(--muted);
   font-size: 10px;
 }
-.strength-options button { padding-inline: 1px; font-size: 9px; }
+.strength-options button {
+  padding-inline: 1px;
+  font-size: 9px;
+}
 .scale-options button.selected {
   background: var(--blue-pale);
   border-color: var(--blue);
@@ -500,7 +519,7 @@ button {
 }
 .saved-actions {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(3, 1fr);
   border-top: 1px solid #f1e5d7;
 }
 .saved-actions button {
@@ -516,9 +535,32 @@ button {
 .saved-actions button.active-action {
   background: #f7b66f;
 }
+.saved-actions button.active-save-action {
+  background: #f7b66f;
+}
 .saved-detail-modal.active-surface {
   background: #fffaf4;
   border: 2px solid #f6b96f;
+}
+.saved-detail-modal.active-surface {
+  border: none;
+}
+.saved-detail-modal > .modal-close {
+  position: sticky;
+  float: right;
+  top: 12px;
+  margin: 12px 12px -46px 0;
+  z-index: 5;
+}
+.create-submit-button {
+  width: 100%;
+  border: 0;
+  border-radius: 14px;
+  background: linear-gradient(135deg, var(--orange), #f59a68);
+  color: white;
+  padding: 14px;
+  font-weight: 800;
+  margin-top: 4px;
 }
 
 .toast {

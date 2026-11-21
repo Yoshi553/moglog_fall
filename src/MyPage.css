@@ -1,56 +1,66 @@
 /* マイページ全体: ホーム画面と同じ淡い背景・白カード・オレンジ水色トーン */
-.mypage-screen { 
-    min-height: 100vh; 
-    background: #f7fbfc; 
+.mypage-screen {
+  min-height: 100vh;
+  background: #f7fbfc;
 }
+
+/*
+ * .mypage-screen
+ * マイページ全体の最小高さと背景色を指定し、ヘッダーから下ナビまで淡い水色系の統一レイアウトにする。
+ */
 
 /* プロフィール上部: アイコン、ユーザーID、表示名、編集ボタンを中央配置 */
-.mypage-screen .my-profile { 
-    display: grid; 
-    grid-template-columns: 1fr; 
-    justify-items: center; 
-    text-align: center; 
-    gap: 6px; 
-    margin: 12px 14px 0; 
-    padding: 22px 14px 12px; 
-    border: 1px solid #edf1f1; 
-    border-radius: 18px; 
-    background: white; 
-    box-shadow: 0 6px 18px rgba(78,123,133,.06); 
+.mypage-screen .my-profile {
+  display: grid;
+  grid-template-columns: 1fr;
+  justify-items: center;
+  text-align: center;
+  gap: 6px;
+  margin: 12px 14px 0;
+  padding: 22px 14px 12px;
+  border: 1px solid #edf1f1;
+  border-radius: 18px;
+  background: white;
+  box-shadow: 0 6px 18px rgba(78, 123, 133, 0.06);
 }
 
-.mypage-screen .my-profile .large-avatar { 
-    width: 76px; 
-    height: 76px; 
-    margin: 0; 
+.mypage-screen .my-profile .large-avatar {
+  width: 76px;
+  height: 76px;
+  margin: 0;
 }
 
-.mypage-screen .my-profile h2 { 
-    margin: 4px 0 2px; 
-    font-size: 16px; 
+.mypage-screen .my-profile h2 {
+  margin: 4px 0 2px;
+  font-size: 16px;
 }
 
 .mypage-screen .copy-id {
-    border: 0; 
-    background: transparent; 
-    color: #70838a; 
-    padding: 0; 
-    font-size: px;
+  border: 0;
+  background: transparent;
+  color: #70838a;
+  padding: 0;
+  font-size: px;
 }
 
 .mypage-screen .copy-id span {
-    color: #56a0b1; 
+  color: #56a0b1;
 }
 
 .mypage-screen .edit-profile {
-    margin-top: 4px; 
-    border: 1px solid #f2c79f; 
-    border-radius: 12px; 
-    background: #fff5ea; 
-    color: #c87542; 
-    padding: 8px 12px; 
-    font-size: 11px; 
+  margin-top: 4px;
+  border: 1px solid #f2c79f;
+  border-radius: 12px;
+  background: #fff5ea;
+  color: #c87542;
+  padding: 8px 12px;
+  font-size: 11px;
 }
+
+/*
+ * .my-profile
+ * プロフィールカードを中央揃えの1列配置にし、アイコン・表示名・ユーザーID・編集ボタンを縦方向へ並べる。
+ */
 
 /* 好み一覧: 好きな食べ物と辛さ・甘さ・濃さをカード内で整理 */
 /* 好み一覧 */
@@ -63,7 +73,7 @@
   border-radius: 16px;
   background: white;
   padding: 14px 10px;
-  box-shadow: 0 6px 18px rgba(78,123,133,.06);
+  box-shadow: 0 6px 18px rgba(78, 123, 133, 0.06);
 }
 
 .mypage-screen .preference-summary h3 {
@@ -111,127 +121,564 @@
   font-weight: 700;
 }
 
+/*
+ * .copy-id
+ * ユーザーIDをクリップボードへコピーする操作ボタン。文字を大きめにし、右側の📝だけでもコピーできる。
+ * .preference-summary
+ * 好きな食べ物と辛さ・甘さ・濃さを白カードへまとめ、好みの値を読みやすい濃い文字色で表示する。
+ */
+
 /* フォロー・フォロワー・保存件数: 区切り線付きの3等分カード */
-.mypage-screen .social-counts { display: grid; grid-template-columns: repeat(3,1fr); margin: 12px 14px; border: 1px solid #edf1f1; border-radius: 16px; background: white; box-shadow: 0 6px 18px rgba(78,123,133,.06); }
-.mypage-screen .social-counts button { display: flex; flex-direction: column; align-items: center; border: 0; border-right: 1px solid #eff3f3; background: white; padding: 13px 4px; }.mypage-screen .social-counts button:last-child { border-right: 0; }.mypage-screen .social-counts strong { color: var(--orange-deep); }.mypage-screen .social-counts span { color: #8e9ba0; font-size: 11px; }
+.mypage-screen .social-counts {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  margin: 12px 14px;
+  border: 1px solid #edf1f1;
+  border-radius: 16px;
+  background: white;
+  box-shadow: 0 6px 18px rgba(78, 123, 133, 0.06);
+}
+.mypage-screen .social-counts button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border: 0;
+  border-right: 1px solid #eff3f3;
+  background: white;
+  padding: 13px 4px;
+}
+.mypage-screen .social-counts button:last-child {
+  border-right: 0;
+}
+.mypage-screen .social-counts strong {
+  color: var(--orange-deep);
+}
+.mypage-screen .social-counts span {
+  color: #8e9ba0;
+  font-size: 11px;
+}
+
+/*
+ * .social-counts
+ * フォロー・フォロワー・投稿数を3等分し、中央を区切る縦線とオレンジの数字を使う。
+ */
 
 /* 投稿一覧: 自分の投稿と保存投稿をスマホで縦並びカードとして表示 */
 .mypage-screen .own-posts,
-.mypage-screen .saved-posts { 
-    margin: 12px 14px; 
-    border: 1px solid #edf1f1; 
-    border-radius: 16px; 
-    background: white; 
-    padding: 12px; 
-    box-shadow: 0 6px 18px rgba(78,123,133,.06); 
+.mypage-screen .saved-posts {
+  margin: 12px 14px;
+  border: 1px solid #edf1f1;
+  border-radius: 16px;
+  background: white;
+  padding: 12px;
+  box-shadow: 0 6px 18px rgba(78, 123, 133, 0.06);
 }
 
 .mypage-screen .own-posts h3,
-.mypage-screen .saved-posts h3 { 
-    margin: 0 0 12px; 
-    font-size: 15px; 
-    text-align: left; 
+.mypage-screen .saved-posts h3 {
+  margin: 0 0 12px;
+  font-size: 15px;
+  text-align: left;
 }
 
 .mypage-screen .own-posts h3 span,
 .mypage-screen .saved-posts h3 span {
-     color: #71aabd; 
+  color: #71aabd;
 }
 
 .mypage-screen .own-posts > div,
-.mypage-screen .saved-posts > div { 
-    display: grid; 
-    grid-template-columns: repeat(2,minmax(0,1fr)); gap: 8px; 
+.mypage-screen .saved-posts > div {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
 }
 
 .mypage-screen .own-posts button,
-.mypage-screen .saved-posts button { 
-    width: 100%; 
-    aspect-ratio: 1; 
-    border: 1px solid #edf1f1; 
-    border-radius: 14px; 
-    padding: 0; 
-    overflow: hidden; 
-    background: #edf3f3; 
-    box-shadow: 0 5px 18px rgba(78,123,133,.07); 
+.mypage-screen .saved-posts button {
+  width: 100%;
+  aspect-ratio: 1;
+  border: 1px solid #edf1f1;
+  border-radius: 14px;
+  padding: 0;
+  overflow: hidden;
+  background: #edf3f3;
+  box-shadow: 0 5px 18px rgba(78, 123, 133, 0.07);
 }
 
 .mypage-screen .own-posts button img,
 .mypage-screen .saved-posts button img {
-    display: block;
-    width: 100%; 
-    height: 100%; 
-    object-fit: cover; 
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* 自分の投稿: 写真内右上に削除ボタンを表示する */
+.own-post-item {
+  position: relative;
+  aspect-ratio: 1;
+  overflow: hidden;
+  border-radius: 14px;
+}
+.own-post-item .own-post-image {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  padding: 0;
+}
+.own-post-item .own-post-delete {
+  position: absolute;
+  right: 6px;
+  bottom: 6px;
+  border: 0;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.94);
+  color: #b95f50;
+  padding: 6px 8px;
+  font-size: 11px;
+  box-shadow: 0 3px 10px rgba(78, 123, 133, 0.12);
+}
+
+/* マイページ下部: ログアウトを薄い赤系ボタンで表示する */
+.logout-button {
+  width: calc(100% - 28px);
+  margin: 4px 14px 90px;
+  border: 1px solid #efddd8;
+  border-radius: 14px;
+  background: #fff9f7;
+  color: #b95f50;
+  padding: 12px;
+  font-weight: 800;
 }
 
 /* 好み編集ヘッダーと表示名モーダル */
-.preference-header { grid-column: 1/-1; display:flex; justify-content:center; align-items:center; gap:8px; }.preference-header h3 { margin:0; }.preference-header button { border:1px solid #f2c79f; border-radius:10px; background:#fff5ea; color:#c87542; padding:5px 9px; font-size:11px; }
-.name-edit-modal { width:min(360px,calc(100% - 32px)); background:white; border-radius:20px; padding:28px 20px 20px; text-align:center; }.name-edit-modal h2 { margin:0 0 16px; }.name-edit-modal input { width:100%; border:1px solid #dde8ea; border-radius:12px; padding:12px; margin-bottom:12px; }
+.preference-header {
+  grid-column: 1/-1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+}
+.preference-header h3 {
+  margin: 0;
+}
+.preference-header button {
+  border: 1px solid #f2c79f;
+  border-radius: 10px;
+  background: #fff5ea;
+  color: #c87542;
+  padding: 5px 9px;
+  font-size: 11px;
+}
+.name-edit-modal {
+  width: min(360px, calc(100% - 32px));
+  background: white;
+  border-radius: 20px;
+  padding: 28px 20px 20px;
+  text-align: center;
+}
+.name-edit-modal h2 {
+  margin: 0 0 16px;
+}
+.name-edit-modal input {
+  width: 100%;
+  border: 1px solid #dde8ea;
+  border-radius: 12px;
+  padding: 12px;
+  margin-bottom: 12px;
+}
 
 /* フォロー・フォロワーの操作ボタンと申請一覧 */
-.social-modal-header { display:flex; justify-content:center; align-items:center; gap:10px; }.social-modal-header h2 { margin:0; }.friend-add-button,.friend-request-button { border:0; border-radius:12px; background:#fff0df; color:#c87542; padding:7px 9px; font-size:11px; }.friend-search { display:grid; grid-template-columns:1fr auto; gap:8px; margin:12px 0; }.friend-search input { min-width:0; border:1px solid #dde8ea; border-radius:12px; padding:10px; }.friend-search button { border:0; border-radius:12px; background:var(--orange); color:white; }.friend-message { text-align:center; color:#64a7b5; font-size:12px; }.friend-request-row { display:grid; grid-template-columns:42px 1fr auto auto; align-items:center; gap:8px; border-bottom:1px solid #edf2f2; padding:8px 0; }.friend-request-row button { border:0; border-radius:10px; padding:7px 9px; }.friend-request-row .accept { background:#fff0df; color:#c87542; }.friend-request-row .reject { background:#edf2f2; color:#718087; }
+.social-modal-header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}
+.social-modal-header h2 {
+  margin: 0;
+}
+.friend-add-button,
+.friend-request-button {
+  border: 0;
+  border-radius: 12px;
+  background: #fff0df;
+  color: #c87542;
+  padding: 7px 9px;
+  font-size: 11px;
+}
+.friend-search {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px;
+  margin: 12px 0;
+}
+.friend-search input {
+  min-width: 0;
+  border: 1px solid #dde8ea;
+  border-radius: 12px;
+  padding: 10px;
+}
+.friend-search button {
+  border: 0;
+  border-radius: 12px;
+  background: var(--orange);
+  color: white;
+}
+.friend-message {
+  text-align: center;
+  color: #64a7b5;
+  font-size: 12px;
+}
+.friend-request-row {
+  display: grid;
+  grid-template-columns: 42px 1fr auto auto;
+  align-items: center;
+  gap: 8px;
+  border-bottom: 1px solid #edf2f2;
+  padding: 8px 0;
+}
+.friend-request-row button {
+  border: 0;
+  border-radius: 10px;
+  padding: 7px 9px;
+}
+.friend-request-row .accept {
+  background: #fff0df;
+  color: #c87542;
+}
+.friend-request-row .reject {
+  background: #edf2f2;
+  color: #718087;
+}
 
 /* 保存投稿カード: ホーム投稿と同じ文字色・サイズ・アクション形式 */
-.saved-post-card { grid-column:1/-1; overflow:hidden; border:1px solid #edf1f1; border-radius:14px; background:white; }.saved-post-photo { width:100%; aspect-ratio:auto; border:0; padding:0; background:#edf3f3; }.saved-post-photo img { width:100%!important; height:auto!important; max-height:420px; object-fit:cover!important; }.saved-post-copy { min-height:62px; padding:7px 8px 9px; }.saved-post-copy b { color:#4d5d64; }.saved-post-stars { margin-left:8px; color:#f5a44f; font-size:12px; }.saved-post-copy p { margin:3px 0; font-size:11px; line-height:1.55; color:#59666d; }.saved-post-actions { display:grid; grid-template-columns:repeat(3,1fr); height:54px; border-top:1px solid #edf1f1; }.saved-post-actions button { border:0; border-right:1px solid #edf2f2; background:white; font-size:19px; }.saved-post-actions button:last-child { border-right:0; }.saved-post-actions small { color:#71858b; font-size:11px; }.saved-post-actions button.saved { background:#fff4e7; }
+.saved-post-card {
+  grid-column: 1/-1;
+  overflow: hidden;
+  border: 1px solid #edf1f1;
+  border-radius: 14px;
+  background: white;
+}
+.saved-post-photo {
+  width: 100%;
+  aspect-ratio: auto;
+  border: 0;
+  padding: 0;
+  background: #edf3f3;
+}
+.saved-post-photo img {
+  width: 100% !important;
+  height: auto !important;
+  max-height: 420px;
+  object-fit: cover !important;
+}
+.saved-post-copy {
+  min-height: 62px;
+  padding: 7px 8px 9px;
+}
+.saved-post-copy b {
+  color: #4d5d64;
+}
+.saved-post-stars {
+  margin-left: 8px;
+  color: #f5a44f;
+  font-size: 12px;
+}
+.saved-post-copy p {
+  margin: 3px 0;
+  font-size: 11px;
+  line-height: 1.55;
+  color: #59666d;
+}
+.saved-post-actions {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  height: 54px;
+  border-top: 1px solid #edf1f1;
+}
+.saved-post-actions button {
+  border: 0;
+  border-right: 1px solid #edf2f2;
+  background: white;
+  font-size: 19px;
+}
+.saved-post-actions button:last-child {
+  border-right: 0;
+}
+.saved-post-actions small {
+  color: #71858b;
+  font-size: 11px;
+}
+.saved-post-actions button.saved {
+  background: #fff4e7;
+}
 
 /* 保存投稿を自分の投稿より上に表示 */
-.mypage-screen .saved-posts { order:1; }.mypage-screen .own-posts { order:2; }.mypage-screen { display:flex; flex-direction:column; }
+.mypage-screen .saved-posts {
+  order: 1;
+}
+.mypage-screen .own-posts {
+  order: 2;
+}
+.mypage-screen {
+  display: flex;
+  flex-direction: column;
+}
 
 /* フォロー・フォロワー一覧モーダル: 下から出る縦リスト */
 .social-modal {
-    width: 100%;
-    max-width: 520px; 
-    max-height: 82vh; 
-    overflow-y: auto; 
-    background: white; 
-    border-radius: 24px 24px 0 0; 
-    padding: 22px 16px 30px; 
-    position: relative; 
+  width: 100%;
+  max-width: 520px;
+  max-height: 82vh;
+  overflow-y: auto;
+  background: white;
+  border-radius: 24px 24px 0 0;
+  padding: 22px 16px 30px;
+  position: relative;
 }
 
 .social-modal h2 {
-    margin: 4px 0 14px; 
-    text-align: center; 
+  margin: 4px 0 14px;
+  text-align: center;
 }
 
 .social-list {
-    display: flex; 
-    flex-direction: column; 
+  display: flex;
+  flex-direction: column;
 }
 
 .social-list button {
-    min-height: 62px; 
-    display: grid; 
-    grid-template-columns:46px 1fr auto; 
-    align-items:center; 
-    gap:9px;
-    border:0; 
-    border-bottom:1px solid #edf2f2; 
-    background:white; 
-    text-align:left; 
-    color:#52636a; 
+  min-height: 62px;
+  display: grid;
+  grid-template-columns: 46px 1fr auto;
+  align-items: center;
+  gap: 9px;
+  border: 0;
+  border-bottom: 1px solid #edf2f2;
+  background: white;
+  text-align: left;
+  color: #52636a;
 }
 
 .small-avatar {
-    display:grid; 
-    place-items:center; 
-    width:42px; 
-    height:42px; 
-    border-radius:50%; 
-    background:linear-gradient(135deg,#ffe7c9,#cfeff5); 
-    color:#66818a; 
-    font-weight:900; 
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ffe7c9, #cfeff5);
+  color: #66818a;
+  font-weight: 900;
 }
 
 .social-list button small {
-    color:#64a7b5; 
-    background:#edf8fa; 
-    border-radius:12px;
-    padding:5px 8px;
+  color: #64a7b5;
+  background: #edf8fa;
+  border-radius: 12px;
+  padding: 5px 8px;
 }
 
-@media (min-width:700px) { .social-modal { border-radius:24px; } }
+@media (min-width: 700px) {
+  .social-modal {
+    border-radius: 24px;
+  }
+}
 
 /* 好み項目のラベルと好きな食べ物も濃い文字で読みやすく表示する */
 .mypage-screen .favorite-foods b,
-.mypage-screen .preference-scales b { color: #40545b; font-weight: 800; }
+.mypage-screen .preference-scales b {
+  color: #40545b;
+  font-weight: 800;
+}
+
+/* マイページヘッダー右側: ログアウトを小さなオレンジボタンで表示 */
+.header-logout {
+  border: 1px solid #efddd8;
+  border-radius: 12px;
+  background: #fff9f7;
+  color: #b95f50;
+  padding: 6px 7px;
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+/* フォロー・フォロワー一覧: 名前と操作を右側に揃える */
+.social-item {
+  border-bottom: 1px solid #edf2f2;
+}
+.social-item-main {
+  min-height: 62px;
+  display: grid;
+  grid-template-columns: 46px 1fr auto;
+  align-items: center;
+  gap: 9px;
+}
+.following-button,
+.follower-delete-button {
+  border: 0;
+  border-radius: 12px;
+  background: #edf8fa;
+  color: #64a7b5;
+  padding: 7px 9px;
+  font-size: 11px;
+}
+.follower-delete-button {
+  background: #fff5f2;
+  color: #b95f50;
+  border: 1px solid #f1ddd8;
+}
+.social-confirm {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  align-items: center;
+  gap: 7px;
+  background: #fffaf4;
+  border-radius: 12px;
+  margin: 0 0 8px;
+  padding: 8px;
+}
+.social-confirm p {
+  margin: 0;
+  color: #6b6260;
+  font-size: 12px;
+}
+.social-confirm button {
+  border: 0;
+  border-radius: 10px;
+  padding: 7px 9px;
+}
+.social-confirm .confirm {
+  background: #fff0df;
+  color: #c87542;
+}
+.social-confirm .cancel {
+  background: #edf2f2;
+  color: #718087;
+}
+
+/* 削除確認モーダル */
+.social-delete-modal {
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: min(280px, calc(100% - 32px));
+  background: white;
+  border: 1px solid #edf1f1;
+  border-radius: 16px;
+  box-shadow: 0 12px 40px rgba(78, 123, 133, 0.18);
+  padding: 18px;
+  z-index: 80;
+  text-align: center;
+}
+.social-delete-modal p {
+  margin: 0 0 14px;
+  font-weight: 800;
+  color: #4d5d64;
+}
+.social-delete-modal > div {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+}
+.social-delete-modal button {
+  min-width: 68px;
+  border: 0;
+  border-radius: 10px;
+  padding: 9px;
+}
+.social-delete-modal .confirm {
+  background: #fff0df;
+  color: #c87542;
+}
+.social-delete-modal .cancel {
+  background: #edf2f2;
+  color: #718087;
+}
+
+/* 投稿削除関連 */
+.delete-mode-button,
+.cancel-delete,
+.delete-selected,
+.own-post-select,
+.own-post-delete {
+  border: 1px solid #efddd8;
+  border-radius: 10px;
+  background: #fff9f7;
+  color: #b95f50;
+  padding: 7px 9px;
+  font-size: 11px;
+}
+.own-post-item.selected {
+  outline: 3px solid var(--orange);
+}
+.own-post-image {
+  position: relative;
+}
+.own-post-image .post-check {
+  position: absolute;
+  right: 6px;
+  top: 6px;
+  width: 24px;
+  height: 24px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--orange);
+  color: white;
+}
+
+/* 保存投稿モーダルの枠線をなくし、スクロールしても×を固定表示する */
+.saved-detail-modal {
+  border: none !important;
+}
+.saved-detail-modal > .modal-close {
+  position: sticky;
+  float: right;
+  top: 12px;
+  margin: 12px 12px -46px 0;
+  z-index: 5;
+}
+
+/* 自分の投稿削除モード: 見出し横のボタンと選択チェック */
+.own-post-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+.own-post-header h3 {
+  margin: 0;
+}
+.delete-mode-button,
+.delete-selected-button {
+  border: 1px solid #efddd8;
+  border-radius: 10px;
+  background: #fff9f7;
+  color: #b95f50;
+  padding: 7px 9px;
+  font-size: 11px;
+}
+.delete-selected-button {
+  width: 100%;
+  margin: 0 0 10px;
+}
+.delete-selected-button:disabled {
+  opacity: 0.45;
+}
+.own-post-item .own-post-image {
+  position: relative;
+}
+.post-check {
+  position: absolute;
+  right: 7px;
+  top: 7px;
+  width: 24px;
+  height: 24px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--orange);
+  color: white;
+}

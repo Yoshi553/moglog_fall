@@ -74,6 +74,21 @@ const seedPosts = [
   },
 ];
 
+/*
+ * seedPosts（サンプル投稿一覧）
+ * ローカルストレージに投稿がないときだけ最初に表示する初期データ。
+ * id: 投稿を一意に識別し、削除・保存・コメントの対象にする。
+ * userId: 投稿者のユーザーID。マイページの「自分の投稿」を絞り込む際に使う。
+ * name/avatar: 表示名とアイコンの一文字目。
+ * rating: 0〜5の評価。投稿一覧では⭐️ 数値として表示する。
+ * image: 写真のURLまたはアップロード写真のdata URL。
+ * location: 店名や場所名。
+ * comment: 投稿者本文。長い場合は省略表示し、必要に応じて全文を展開する。
+ * comments: 他ユーザーの{name, text}形式コメント配列。
+ * saved: 保存済みかどうか。マイページの保存一覧へ反映する。
+ * pin: 地図上のピン位置を横・縦の割合で保持する。
+ */
+
 /* コンポーネント: 星評価を「⭐️ 数値」で統一表示する */
 function Stars({ value, size = "normal" }) {
   return (
@@ -564,15 +579,7 @@ function CreatePost({ account, onCancel, onCreate }) {
 
   return (
     <main className="create-screen">
-      <Header
-        title="投稿作成"
-        onBack={onCancel}
-        right={
-          <button className="header-save" onClick={submit}>
-            投稿する
-          </button>
-        }
-      />
+      <Header title="投稿作成" onBack={onCancel} />
       <section className="create-form">
         <label className="photo-picker">
           {image ? (
@@ -631,6 +638,7 @@ function CreatePost({ account, onCancel, onCreate }) {
             placeholder="みんなに感想を伝えましょう。"
           />
         </label>
+        <button className="create-submit-button" onClick={submit}>投稿する</button>
       </section>
     </main>
   );
@@ -704,7 +712,7 @@ function MapModal({ post, onClose }) {
 }
 
 /* 保存投稿詳細。保存した投稿をタップすると内容全体を確認できる */
-function SavedPostModal({ post, onClose, onComment, accountName }) {
+function SavedPostModal({ post, onClose, onComment, accountName, onSave }) {
   const [activeAction, setActiveAction] = useState("photo");
   const [comment, setComment] = useState("");
   const addComment = (event) => {
@@ -717,7 +725,7 @@ function SavedPostModal({ post, onClose, onComment, accountName }) {
   return (
     <div className="overlay" onClick={onClose}>
       <section
-        className={`saved-detail-modal ${activeAction !== "photo" ? "active-surface" : ""}`}
+        className={`saved-detail-modal`}
         onClick={(event) => event.stopPropagation()}
       >
         <button className="modal-close" onClick={onClose}>
@@ -803,6 +811,7 @@ function SavedPostModal({ post, onClose, onComment, accountName }) {
           >
             📍
           </button>
+          <button className={post.saved ? "active-save-action" : ""} onClick={() => onSave(post.id)} aria-label="保存">📁</button>
         </div>
       </section>
     </div>
@@ -907,6 +916,8 @@ function LegacyMyPage({
   onSocial,
   onUpdateName,
   onEditPreferences,
+  onDeletePost,
+  onLogout,
 }) {
   const saved = posts.filter((post) => post.saved);
   const ownPosts = posts.filter((post) => post.userId === account.userId);
@@ -1056,12 +1067,14 @@ function App() {
     const accounts = JSON.parse(localStorage.getItem("moglog_accounts") || "[]").map((item) => item.userId === next.userId ? next : item);
     localStorage.setItem("moglog_accounts", JSON.stringify(accounts));
   };
-  const toggleSave = (id) =>
+  const toggleSave = (id) => {
+    // toggleSave：対象投稿のsavedだけ反転し、配列全体を新しくして再描画させる。
     setPosts((old) =>
       old.map((post) =>
         post.id === id ? { ...post, saved: !post.saved } : post,
       ),
     );
+  };
   const addComment = (id, text) =>
     setPosts((old) =>
       old.map((post) =>
@@ -1072,7 +1085,7 @@ function App() {
             }
           : post,
       ),
-    );
+    ); // addComment：対象投稿のcomments配列末尾へ現在ログインユーザー名と本文を追加する。
   const openProfile = (post) =>
     setModalPost(
       post.profile
@@ -1089,91 +1102,53 @@ function App() {
     setPosts((old) => [{ ...post, profile: account.profile }, ...old]);
     setScreen("home");
     setTab("home");
-  };
+  }; // createPost：新しい投稿オブジェクトを配列先頭へ追加し、ホーム画面へ戻る。
+  const deletePost = (postId) => {
+    setPosts((old) => old.filter((post) => post.id !== postId));
+    setSavedPost(null);
+  }; // deletePost：対象投稿ID以外だけを残して配列から削除し、保存詳細モーダルも閉じる。
 
+  const logout = () => {
+    localStorage.removeItem("moglog_current");
+    setAccount(null);
+    setTab("home");
+    setScreen("auth");
+  }; // logout：moglog_currentを削除し、アカウント状態とタブをリセットしてログイン画面へ戻す。
+
+  /*
+   * App（アプリ全体の親コンポーネント）
+   * accountは現在ログイン中のユーザー。moglog_currentへ保存し、再読み込み時にログイン状態を復元する。
+   * screenはログイン、好み設定、通常画面、投稿作成を切り替え、tabはホーム／マイページを切り替える。
+   * postsは全投稿配列。moglog_postsへ保存し、コメント追加・保存切り替え・投稿削除で配列を更新する。
+   * modalPost・savedPost・mapPost・socialTypeはそれぞれプロフィール・保存投稿・地図・フォロー一覧モーダルの対象を保持する。
+   */
+
+  // screenがauthならログイン画面、setupなら初回好み設定だけを表示する。
   if (screen === "auth") return <AuthScreen onLogin={login} />;
-  if (screen === "setup")
-    return <ProfileSetup account={account} onSave={saveProfile} />;
+  if (screen === "setup") return <ProfileSetup account={account} onSave={saveProfile} />;
 
+  // 通常画面では投稿作成・ホーム・マイページを同じapp-shell内へ描画し、下部ナビで切り替える。
   return (
     <div className="app-shell">
       {screen === "create" ? (
-        <CreatePost
-          account={account}
-          onCancel={() => setScreen("home")}
-          onCreate={createPost}
-        />
+        <CreatePost account={account} onCancel={() => setScreen("home")} onCreate={createPost} />
       ) : tab === "home" ? (
-        <Home
-          posts={posts}
-          onSave={toggleSave}
-          onComment={addComment}
-          onProfile={openProfile}
-          onMap={setMapPost}
-          onCreate={() => setScreen("create")}
-          accountName={account.name}
-        />
+        <Home posts={posts} onSave={toggleSave} onComment={addComment} onProfile={openProfile} onMap={setMapPost} onCreate={() => setScreen("create")} accountName={account?.name} />
       ) : (
-        <MyPage
-          account={account}
-          posts={posts}
-          onEditProfile={() => setScreen("setup")}
-          onEditPreferences={() => setScreen("setup")}
-          onUpdateName={updateName}
-          onOpenSavedPost={setSavedPost}
-          onOpenOwnPost={setSavedPost}
-          onCopyId={() => {
-            setToast("ユーザーIDをコピーしました");
-            setTimeout(() => setToast(""), 1800);
-          }}
-          onSocial={setSocialType}
-        />
+        <MyPage account={account} posts={posts} onEditProfile={() => setScreen("setup")} onEditPreferences={() => setScreen("setup")} onUpdateName={updateName} onOpenSavedPost={setSavedPost} onOpenOwnPost={setSavedPost} onCopyId={() => { setToast("ユーザーIDをコピーしました"); setTimeout(() => setToast(""), 1800); }} onSocial={setSocialType} onDeletePost={deletePost} onLogout={logout} />
       )}
+
       {screen !== "create" && (
         <nav className="bottom-nav">
-          <button
-            className={tab === "home" ? "active" : ""}
-            onClick={() => {
-              setTab("home");
-              setScreen("home");
-            }}
-          >
-            <span>⌂</span>
-            <small>ホーム</small>
-          </button>
-          <button
-            className={tab === "mypage" ? "active" : ""}
-            onClick={() => {
-              setTab("mypage");
-              setScreen("mypage");
-            }}
-          >
-            <span>♙</span>
-            <small>マイページ</small>
-          </button>
+          <button className={tab === "home" ? "active" : ""} onClick={() => { setTab("home"); setScreen("home"); }}><span>⌂</span><small>ホーム</small></button>
+          <button className={tab === "mypage" ? "active" : ""} onClick={() => { setTab("mypage"); setScreen("home"); }}><span>♙</span><small>マイページ</small></button>
         </nav>
       )}
-      {modalPost && (
-        <ProfileModal post={modalPost} onClose={() => setModalPost(null)} />
-      )}
+
+      {modalPost && <ProfileModal post={modalPost} onClose={() => setModalPost(null)} />}
       {mapPost && <MapModal post={mapPost} onClose={() => setMapPost(null)} />}
-      {savedPost && (
-        <SavedPostModal
-          post={savedPost}
-          onClose={() => setSavedPost(null)}
-          onComment={addComment}
-          accountName={account.name}
-        />
-      )}
-      {socialType && (
-        <SocialListModal
-          type={socialType}
-          onClose={() => setSocialType(null)}
-          onAddFriend={(friend) =>
-            setToast(`${friend.name}さんを友達に追加しました`)
-          }
-        />
-      )}
+      {savedPost && <SavedPostModal post={savedPost} onClose={() => setSavedPost(null)} onComment={addComment} accountName={account?.name} onSave={(id) => { const target = posts.find((post) => post.id === id); toggleSave(id); if (target?.saved) setSavedPost(null); }} />}
+      {socialType && <SocialListModal type={socialType} onClose={() => setSocialType(null)} />}
       {toast && <div className="toast">{toast}</div>}
     </div>
   );

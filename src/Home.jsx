@@ -23,6 +23,14 @@ function Stars({ value }) {
   return <span className="stars" aria-label={`評価 ${value}`}>⭐️ {value}</span>;
 }
 
+/*
+ * PostCard（投稿カード表示）
+ * expandedは投稿本文の全文表示、activeActionは本文・コメント・地図のどれを表示中か、commentは入力中テキストを保持する。
+ * 💬を押すとコメント領域へ切り替え、自分のコメントはmine、他人のコメントはotherとして左右配置する。
+ * 📍を押すとカード内の地図へ切り替え、📁は親へ投稿IDを渡して保存状態を反転させる。
+ * 投稿本文は通常2行相当を省略し、45文字を超える場合だけ「全文を読む」を表示する。
+ */
+
 /* 投稿カード: 写真本文、コメント、地図、保存の切り替えを行う */
 function PostCard({ post, onSave, onComment, onProfile, onMap, accountName }) {
   const [expanded, setExpanded] = useState(false);
