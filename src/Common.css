@@ -674,6 +674,34 @@ button {
   font-size: 12px;
   line-height: 1.5;
 }
+/* 他の人のプロフィール: 辛さ・甘さ・濃さを横3列で表示（オレンジ系） */
+.profile-preference-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 16px;
+}
+.profile-preference-grid > div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 12px 4px;
+  border: 1px solid #f2c79f;
+  border-radius: 12px;
+  background: #fff5ea;
+}
+.profile-preference-grid > div > b {
+  font-size: 12px;
+  color: var(--orange-deep);
+}
+.profile-preference-grid > div > span {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--ink);
+  white-space: nowrap;
+}
+
 @media (min-width: 700px) {
   .overlay {
     align-items: center;

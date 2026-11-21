@@ -18,7 +18,7 @@ const toPost = (row, savedIds) => {
   const a = row.author || {};
   return {
     id: row.id,
-    userId: a.user_code,
+    userId: row.user_id,
     name: a.display_name || "ユーザー",
     avatar: (a.display_name || "も")[0],
     rating: Number(row.rating),
@@ -54,8 +54,8 @@ export async function fetchPosts() {
   const { data, error } = await supabase
     .from("posts")
     .select(
-      `id, image_path, shop_name, city, latitude, longitude, rating, comment, created_at,
-       author:profiles!user_id(user_code, display_name, favorite_foods, spicy_pref, sweet_pref, strength_pref),
+      `id, user_id, image_path, shop_name, city, latitude, longitude, rating, comment, created_at,
+       author:profiles!user_id(display_name, favorite_foods, spicy_pref, sweet_pref, strength_pref),
        comments(id, body, created_at, commenter:profiles!user_id(display_name))`,
     )
     .order("created_at", { ascending: false });
@@ -86,7 +86,8 @@ export async function createPostRemote(post) {
   const { error } = await supabase.from("posts").insert({
     user_id: me.id,
     image_path: path,
-    shop_name: post.location && post.location !== "場所未設定" ? post.location : null,
+    shop_name:
+      post.location && post.location !== "場所未設定" ? post.location : null,
     city: post.city || null,
     latitude: post.gps?.latitude ?? null,
     longitude: post.gps?.longitude ?? null,
@@ -145,7 +146,10 @@ export async function fetchFollowing() {
     .eq("status", "accepted")
     .order("created_at", { ascending: false });
   if (error) throw error;
-  return data.map((r) => ({ id: r.followee.id, name: r.followee.display_name }));
+  return data.map((r) => ({
+    id: r.followee.id,
+    name: r.followee.display_name,
+  }));
 }
 
 // 自分をフォローしている人（承認済み）
@@ -158,7 +162,10 @@ export async function fetchFollowers() {
     .eq("status", "accepted")
     .order("created_at", { ascending: false });
   if (error) throw error;
-  return data.map((r) => ({ id: r.follower.id, name: r.follower.display_name }));
+  return data.map((r) => ({
+    id: r.follower.id,
+    name: r.follower.display_name,
+  }));
 }
 
 // 自分に届いている申請
@@ -166,7 +173,7 @@ export async function fetchRequests() {
   const me = await getMe();
   const { data, error } = await supabase
     .from("follows")
-    .select("follower:profiles!follower_id(id, display_name, user_code)")
+    .select("follower:profiles!follower_id(id, display_name)")
     .eq("followee_id", me.id)
     .eq("status", "pending")
     .order("created_at", { ascending: false });
@@ -174,7 +181,6 @@ export async function fetchRequests() {
   return data.map((r) => ({
     id: r.follower.id,
     name: r.follower.display_name,
-    userId: r.follower.user_code,
   }));
 }
 
@@ -184,12 +190,11 @@ export async function sendFollowRequest(userCode) {
   const code = userCode.trim().toUpperCase();
   if (!code) return "ユーザーIDを入力してください";
 
-  const { data: target, error } = await supabase
-    .from("profiles")
-    .select("id, display_name")
-    .eq("user_code", code)
-    .maybeSingle();
+  const { data: found, error } = await supabase.rpc("find_profile_by_code", {
+    p_code: code,
+  });
   if (error) throw error;
+  const target = found?.[0];
   if (!target) return "そのユーザーが見つかりません";
   if (target.id === me.id) return "自分自身には申請できません";
 

@@ -16,7 +16,11 @@ function Header({ title, onLogout }) {
     <header className="topbar">
       <div className="header-spacer" />
       <h1>{title}</h1>
-      <div className="header-right"><button className="header-logout" onClick={onLogout}>ログアウト</button></div>
+      <div className="header-right">
+        <button className="header-logout" onClick={onLogout}>
+          ログアウト
+        </button>
+      </div>
     </header>
   );
 }
@@ -84,7 +88,8 @@ export function SocialListModal({ type, onClose }) {
   const executeAction = async () => {
     if (!confirmTarget) return;
     try {
-      if (confirmTarget.kind === "follow") await unfollowRemote(confirmTarget.id);
+      if (confirmTarget.kind === "follow")
+        await unfollowRemote(confirmTarget.id);
       else await removeFollowerRemote(confirmTarget.id);
       await reload();
     } catch (e) {
@@ -96,33 +101,66 @@ export function SocialListModal({ type, onClose }) {
 
   return (
     <div className="overlay" onClick={onClose}>
-      <section className="social-modal" onClick={(event) => event.stopPropagation()}>
-        <button className="modal-close" onClick={onClose}>×</button>
+      <section
+        className="social-modal"
+        onClick={(event) => event.stopPropagation()}
+      >
+        <button className="modal-close" onClick={onClose}>
+          ×
+        </button>
         <div className="social-modal-header">
           <h2>{type === "follow" ? "フォロー" : "フォロワー"}</h2>
           {type === "follow" ? (
-            <button className="friend-add-button" onClick={() => setSearchOpen(!searchOpen)}>友達追加</button>
+            <button
+              className="friend-add-button"
+              onClick={() => setSearchOpen(!searchOpen)}
+            >
+              友達追加
+            </button>
           ) : (
-            <button className="friend-request-button" onClick={() => setSearchOpen(!searchOpen)}>申請確認 {requests.length}</button>
+            <button
+              className="friend-request-button"
+              onClick={() => setSearchOpen(!searchOpen)}
+            >
+              申請確認 {requests.length}
+            </button>
           )}
         </div>
         {searchOpen && type === "follow" && (
           <form className="friend-search" onSubmit={sendRequest}>
-            <input value={friendId} onChange={(event) => setFriendId(event.target.value)} placeholder="ユーザーIDを検索（例：MG-1234）" />
+            <input
+              value={friendId}
+              onChange={(event) => setFriendId(event.target.value)}
+              placeholder="ユーザーIDを検索（例：MG-1234）"
+            />
             <button>申請</button>
           </form>
         )}
         {message && <p className="friend-message">{message}</p>}
         {searchOpen && type === "follower" ? (
           <div className="friend-request-list">
-            {requests.length ? requests.map((item) => (
-              <div className="friend-request-row" key={item.id}>
-                <span className="small-avatar">{item.name[0]}</span>
-                <b>{item.name}</b>
-                <button className="accept" onClick={() => answerRequest(item.id, true)}>許可</button>
-                <button className="reject" onClick={() => answerRequest(item.id, false)}>拒否</button>
-              </div>
-            )) : <p className="empty">申請はありません</p>}
+            {requests.length ? (
+              requests.map((item) => (
+                <div className="friend-request-row" key={item.id}>
+                  <span className="small-avatar">{item.name[0]}</span>
+                  <b>{item.name}</b>
+                  <button
+                    className="accept"
+                    onClick={() => answerRequest(item.id, true)}
+                  >
+                    許可
+                  </button>
+                  <button
+                    className="reject"
+                    onClick={() => answerRequest(item.id, false)}
+                  >
+                    拒否
+                  </button>
+                </div>
+              ))
+            ) : (
+              <p className="empty">申請はありません</p>
+            )}
           </div>
         ) : (
           <div className="social-list">
@@ -132,17 +170,35 @@ export function SocialListModal({ type, onClose }) {
                   <span className="small-avatar">{person.name[0]}</span>
                   <b>{person.name}</b>
                   {type === "follow" ? (
-                    <button className="following-button" onClick={() => confirmAction("follow", person)}>フォロー中</button>
+                    <button
+                      className="following-button"
+                      onClick={() => confirmAction("follow", person)}
+                    >
+                      フォロー中
+                    </button>
                   ) : (
-                    <button className="follower-delete-button" onClick={() => confirmAction("follower", person)}>削除</button>
+                    <button
+                      className="follower-delete-button"
+                      onClick={() => confirmAction("follower", person)}
+                    >
+                      削除
+                    </button>
                   )}
                 </div>
                 {confirmTarget?.id === person.id && (
-                  <div className="social-delete-modal" role="dialog" aria-modal="true">
+                  <div
+                    className="social-delete-modal"
+                    role="dialog"
+                    aria-modal="true"
+                  >
                     <p>本当に削除しますか？</p>
                     <div>
-                      <button className="confirm" onClick={executeAction}>はい</button>
-                      <button className="cancel" onClick={cancelAction}>いいえ</button>
+                      <button className="confirm" onClick={executeAction}>
+                        はい
+                      </button>
+                      <button className="cancel" onClick={cancelAction}>
+                        いいえ
+                      </button>
                     </div>
                   </div>
                 )}
@@ -180,7 +236,7 @@ export default function MyPage({
   onLogout,
 }) {
   const saved = posts.filter((post) => post.saved);
-  const ownPosts = posts.filter((post) => post.userId === account.userId);
+  const ownPosts = posts.filter((post) => post.userId === account.id);
   const profile = account.profile;
   const [nameEditing, setNameEditing] = useState(false);
   const [nameDraft, setNameDraft] = useState(account.name);
@@ -203,7 +259,9 @@ export default function MyPage({
 
   const toggleSelectPost = (postId) => {
     setSelectedPosts((prev) =>
-      prev.includes(postId) ? prev.filter((id) => id !== postId) : [...prev, postId]
+      prev.includes(postId)
+        ? prev.filter((id) => id !== postId)
+        : [...prev, postId],
     );
   };
 
@@ -247,9 +305,11 @@ export default function MyPage({
                 <b>{key}</b>
                 <span>
                   {key === "濃さ"
-                    ? ["薄味", "普通", "濃い味"][profile[key] ?? 1]
+                    ? ["薄味", "やや薄", "普通", "やや濃い", "濃い味"][
+                        profile[key] ?? 2
+                      ]
                     : ["苦手", "やや苦手", "普通", "やや好き", "好き"][
-                        profile[key]
+                        profile[key] ?? 2
                       ]}
                 </span>
               </p>
@@ -264,7 +324,7 @@ export default function MyPage({
           <span>フォロー</span>
         </button>
         <button onClick={() => onSocial("follower")}>
-          <strong>{counts.followers}  </strong>
+          <strong>{counts.followers} </strong>
           <span>フォロワー</span>
         </button>
         <button
@@ -280,40 +340,108 @@ export default function MyPage({
       </section>
 
       <section className="saved-posts">
-        <h3>保存した投稿 <span>{saved.length}</span></h3>
-        <div>{saved.length ? saved.map((post) => (
-          <button key={post.id} onClick={() => onOpenSavedPost(post)}>
-            <img src={post.image} alt={`${post.location}の保存投稿`} />
-          </button>
-        )) : <p className="empty">保存した投稿はまだありません</p>}</div>
+        <h3>
+          保存した投稿 <span>{saved.length}</span>
+        </h3>
+        <div>
+          {saved.length ? (
+            saved.map((post) => (
+              <button key={post.id} onClick={() => onOpenSavedPost(post)}>
+                <img src={post.image} alt={`${post.location}の保存投稿`} />
+              </button>
+            ))
+          ) : (
+            <p className="empty">保存した投稿はまだありません</p>
+          )}
+        </div>
       </section>
 
       <section className="own-posts">
         <div className="own-post-header">
-          <h3>{deleteMode ? "自分の投稿" : <>自分の投稿 <span>{ownPosts.length}</span></>}</h3>
+          <h3>
+            {deleteMode ? (
+              "自分の投稿"
+            ) : (
+              <>
+                自分の投稿 <span>{ownPosts.length}</span>
+              </>
+            )}
+          </h3>
           {deleteMode ? (
-            <div className="own-delete-actions"><button className="delete-selected-button" onClick={handleDeleteSelected} disabled={selectedPosts.length === 0}>削除</button><button className="delete-mode-button" onClick={toggleDeleteMode}>キャンセル</button></div>
+            <div className="own-delete-actions">
+              <button
+                className="delete-selected-button"
+                onClick={handleDeleteSelected}
+                disabled={selectedPosts.length === 0}
+              >
+                削除
+              </button>
+              <button className="delete-mode-button" onClick={toggleDeleteMode}>
+                キャンセル
+              </button>
+            </div>
           ) : (
-            <button className="delete-mode-button" onClick={toggleDeleteMode}>削除</button>
+            <button className="delete-mode-button" onClick={toggleDeleteMode}>
+              削除
+            </button>
           )}
         </div>
-        <div>{ownPosts.length ? ownPosts.map((post) => (
-          <div className={`own-post-item ${selectedPosts.includes(post.id) ? "selected" : ""}`} key={post.id}>
-            <button className="own-post-image" onClick={() => deleteMode ? toggleSelectPost(post.id) : onOpenOwnPost(post)}>
-              <img src={post.image} alt={`${post.location}の投稿`} />
-              {deleteMode && <span className="post-check">{selectedPosts.includes(post.id) ? "✓" : ""}</span>}
-            </button>
-          </div>
-        )) : <p className="empty">投稿はまだありません</p>}</div>
+        <div>
+          {ownPosts.length ? (
+            ownPosts.map((post) => (
+              <div
+                className={`own-post-item ${selectedPosts.includes(post.id) ? "selected" : ""}`}
+                key={post.id}
+              >
+                <button
+                  className="own-post-image"
+                  onClick={() =>
+                    deleteMode ? toggleSelectPost(post.id) : onOpenOwnPost(post)
+                  }
+                >
+                  <img src={post.image} alt={`${post.location}の投稿`} />
+                  {deleteMode && (
+                    <span className="post-check">
+                      {selectedPosts.includes(post.id) ? "✓" : ""}
+                    </span>
+                  )}
+                </button>
+              </div>
+            ))
+          ) : (
+            <p className="empty">投稿はまだありません</p>
+          )}
+        </div>
       </section>
 
       {nameEditing && (
         <div className="overlay" onClick={() => setNameEditing(false)}>
-          <section className="name-edit-modal" onClick={(event) => event.stopPropagation()}>
-            <button className="modal-close" onClick={() => setNameEditing(false)}>×</button>
+          <section
+            className="name-edit-modal"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <button
+              className="modal-close"
+              onClick={() => setNameEditing(false)}
+            >
+              ×
+            </button>
             <h2>表示名を変更</h2>
-            <input value={nameDraft} onChange={(event) => setNameDraft(event.target.value)} placeholder="表示名" />
-            <button className="primary-button" onClick={() => { if (!nameDraft.trim()) return; onUpdateName(nameDraft.trim()); setNameEditing(false); }}>変更を保存</button>
+            <input
+              value={nameDraft}
+              onChange={(event) => setNameDraft(event.target.value)}
+              placeholder="表示名"
+            />
+            <button
+              className="primary-button"
+              onClick={() => {
+                if (!nameDraft.trim()) return;
+                onUpdateName(nameDraft.trim());
+                setNameEditing(false);
+              }}
+            >
+              変更を保存
+            </button>
           </section>
         </div>
       )}
