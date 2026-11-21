@@ -5,6 +5,7 @@ import LocationMap, { ReverseLocationName, getCityName } from "./LocationMap.jsx
 import { heicTo } from "heic-to";
 import Home from "./Home.jsx";
 import MyPage, { SocialListModal } from "./MyPage.jsx";
+import { supabase } from './supabase'
 
 /* ── 初期データ ─────────────────────────────────────────── */
 const seedPosts = [
@@ -1077,6 +1078,19 @@ function App() {
     () => localStorage.setItem("moglog_posts", JSON.stringify(posts)),
     [posts],
   );
+
+  useEffect(() => {
+  const testConnection = async () => {
+    const { data, error } = await supabase
+      .from('users')
+      .select('*')
+
+    console.log('data:', data)
+    console.log('error:', error)
+  }
+
+  testConnection()
+}, [])
 
   const login = (nextAccount) => {
     setAccount(nextAccount);
