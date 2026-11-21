@@ -1,5 +1,14 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./MyPage.css";
+import {
+  fetchFollowing,
+  fetchFollowers,
+  fetchRequests,
+  sendFollowRequest,
+  answerRequestRemote,
+  unfollowRemote,
+  removeFollowerRemote,
+} from "./api";
 
 /* 共通ヘッダー: マイページタイトルを表示する */
 function Header({ title, onLogout }) {
@@ -24,48 +33,63 @@ export function SocialListModal({ type, onClose }) {
   const [friendId, setFriendId] = useState("");
   const [message, setMessage] = useState("");
   const [confirmTarget, setConfirmTarget] = useState(null);
-  const [follows, setFollows] = useState(() => JSON.parse(localStorage.getItem("moglog_follows") || "null") || ["はるこ","たけし","みお","ゆう","さくら","けん","あや","りく","なお","めぐ","つばさ","ひなた"]);
-  const [followers, setFollowers] = useState(() => JSON.parse(localStorage.getItem("moglog_followers") || "null") || ["みお","ゆう","さくら","けん","あおい","そら","りん","かなた","ゆな","れん","まこ","はる","のん","こう","みさ","たいき","えみ","じゅん"]);
+  const [follows, setFollows] = useState([]);
+  const [followers, setFollowers] = useState([]);
+  const [requests, setRequests] = useState([]);
 
-  const [requests, setRequests] = useState(() => JSON.parse(localStorage.getItem("moglog_friend_requests") || "null") || [
-    { userId: "MG-4821", name: "みお" },
-    { userId: "MG-5532", name: "ゆう" },
-  ]);
+  const reload = async () => {
+    try {
+      const [a, b, c] = await Promise.all([
+        fetchFollowing(),
+        fetchFollowers(),
+        fetchRequests(),
+      ]);
+      setFollows(a);
+      setFollowers(b);
+      setRequests(c);
+    } catch (e) {
+      console.log("social load error:", e.message);
+    }
+  };
 
-  const sendRequest = (event) => {
+  useEffect(() => {
+    reload();
+  }, []);
+
+  const sendRequest = async (event) => {
     event.preventDefault();
-    const accounts = JSON.parse(localStorage.getItem("moglog_accounts") || "[]");
-    const found = accounts.find((item) => item.userId === friendId.trim());
-    if (!friendId.trim()) setMessage("ユーザーIDを入力してください");
-    else if (!found) setMessage("そのユーザーが見つかりません");
-    else setMessage(`${found.name}さんに友達申請を送りました`);
+    try {
+      setMessage(await sendFollowRequest(friendId));
+      setFriendId("");
+    } catch (e) {
+      console.log("request error:", e.message);
+      setMessage("申請に失敗しました");
+    }
   };
 
-  const answerRequest = (userId, accepted) => {
-    const next = requests.filter((item) => item.userId !== userId);
-    setRequests(next);
-    localStorage.setItem("moglog_friend_requests", JSON.stringify(next));
-    setMessage(accepted ? "申請を許可しました" : "申請を拒否しました");
+  const answerRequest = async (id, accepted) => {
+    try {
+      await answerRequestRemote(id, accepted);
+      setMessage(accepted ? "申請を許可しました" : "申請を拒否しました");
+      await reload();
+    } catch (e) {
+      console.log("answer error:", e.message);
+      setMessage("処理に失敗しました");
+    }
   };
 
-  const toggleFollow = (name) => {
-    const next = follows.includes(name) ? follows.filter((item) => item !== name) : [...follows, name];
-    setFollows(next);
-    localStorage.setItem("moglog_follows", JSON.stringify(next));
-  };
-
-  const confirmAction = (kind, name) => setConfirmTarget({ kind, name });
+  const confirmAction = (kind, person) =>
+    setConfirmTarget({ kind, id: person.id, name: person.name });
   const cancelAction = () => setConfirmTarget(null);
-  const executeAction = () => {
+  const executeAction = async () => {
     if (!confirmTarget) return;
-    if (confirmTarget.kind === "follow") {
-      const next = follows.filter((item) => item !== confirmTarget.name);
-      setFollows(next);
-      localStorage.setItem("moglog_follows", JSON.stringify(next));
-    } else {
-      const next = followers.filter((item) => item !== confirmTarget.name);
-      setFollowers(next);
-      localStorage.setItem("moglog_followers", JSON.stringify(next));
+    try {
+      if (confirmTarget.kind === "follow") await unfollowRemote(confirmTarget.id);
+      else await removeFollowerRemote(confirmTarget.id);
+      await reload();
+    } catch (e) {
+      console.log("remove error:", e.message);
+      setMessage("処理に失敗しました");
     }
     setConfirmTarget(null);
   };
@@ -83,28 +107,50 @@ export function SocialListModal({ type, onClose }) {
           )}
         </div>
         {searchOpen && type === "follow" && (
-          <form className="friend-search" onSubmit={sendRequest}><input value={friendId} onChange={(event) => setFriendId(event.target.value)} placeholder="ユーザーIDを検索" /><button>申請</button></form>
+          <form className="friend-search" onSubmit={sendRequest}>
+            <input value={friendId} onChange={(event) => setFriendId(event.target.value)} placeholder="ユーザーIDを検索（例：MG-1234）" />
+            <button>申請</button>
+          </form>
         )}
         {message && <p className="friend-message">{message}</p>}
         {searchOpen && type === "follower" ? (
           <div className="friend-request-list">
             {requests.length ? requests.map((item) => (
-              <div className="friend-request-row" key={item.userId}><span className="small-avatar">{item.name[0]}</span><b>{item.name}</b><button className="accept" onClick={() => answerRequest(item.userId, true)}>許可</button><button className="reject" onClick={() => answerRequest(item.userId, false)}>拒否</button></div>
+              <div className="friend-request-row" key={item.id}>
+                <span className="small-avatar">{item.name[0]}</span>
+                <b>{item.name}</b>
+                <button className="accept" onClick={() => answerRequest(item.id, true)}>許可</button>
+                <button className="reject" onClick={() => answerRequest(item.id, false)}>拒否</button>
+              </div>
             )) : <p className="empty">申請はありません</p>}
           </div>
         ) : (
           <div className="social-list">
-            {(type === "follow" ? follows : followers).map((name) => (
-              <div className="social-item" key={name}>
-                <div className="social-item-main"><span className="small-avatar">{name[0]}</span><b>{name}</b>{type === "follow" ? <button className="following-button" onClick={() => confirmAction("follow", name)}>フォロー中</button> : <button className="follower-delete-button" onClick={() => confirmAction("follower", name)}>削除</button>}</div>
-                {confirmTarget?.name === name && (
+            {(type === "follow" ? follows : followers).map((person) => (
+              <div className="social-item" key={person.id}>
+                <div className="social-item-main">
+                  <span className="small-avatar">{person.name[0]}</span>
+                  <b>{person.name}</b>
+                  {type === "follow" ? (
+                    <button className="following-button" onClick={() => confirmAction("follow", person)}>フォロー中</button>
+                  ) : (
+                    <button className="follower-delete-button" onClick={() => confirmAction("follower", person)}>削除</button>
+                  )}
+                </div>
+                {confirmTarget?.id === person.id && (
                   <div className="social-delete-modal" role="dialog" aria-modal="true">
                     <p>本当に削除しますか？</p>
-                    <div><button className="confirm" onClick={executeAction}>はい</button><button className="cancel" onClick={cancelAction}>いいえ</button></div>
+                    <div>
+                      <button className="confirm" onClick={executeAction}>はい</button>
+                      <button className="cancel" onClick={cancelAction}>いいえ</button>
+                    </div>
                   </div>
                 )}
               </div>
             ))}
+            {(type === "follow" ? follows : followers).length === 0 && (
+              <p className="empty">まだいません</p>
+            )}
           </div>
         )}
       </section>
@@ -122,6 +168,7 @@ export function SocialListModal({ type, onClose }) {
 export default function MyPage({
   account,
   posts,
+  counts,
   onEditProfile,
   onEditPreferences,
   onUpdateName,
@@ -213,11 +260,11 @@ export default function MyPage({
 
       <section className="social-counts">
         <button onClick={() => onSocial("follow")}>
-          <strong>15</strong>
+          <strong>{counts.following}</strong>
           <span>フォロー</span>
         </button>
         <button onClick={() => onSocial("follower")}>
-          <strong>15</strong>
+          <strong>{counts.followers}  </strong>
           <span>フォロワー</span>
         </button>
         <button

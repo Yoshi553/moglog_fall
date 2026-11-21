@@ -1,11 +1,23 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import exifr from "exifr";
 import "./Common.css";
-import LocationMap, { ReverseLocationName, getCityName } from "./LocationMap.jsx";
+import LocationMap, {
+  ReverseLocationName,
+  getCityName,
+} from "./LocationMap.jsx";
 import { heicTo } from "heic-to";
 import Home from "./Home.jsx";
 import MyPage, { SocialListModal } from "./MyPage.jsx";
-import { supabase } from './supabase'
+import { supabase } from "./supabase";
+import { register, login } from "./auth";
+import {
+  fetchPosts,
+  fetchCounts,
+  createPostRemote,
+  toggleSaveRemote,
+  addCommentRemote,
+  deletePostRemote,
+} from "./api";
 
 /* ── 初期データ ─────────────────────────────────────────── */
 const seedPosts = [
@@ -130,37 +142,30 @@ function AuthScreen({ onLogin }) {
   const [userId, setUserId] = useState("");
   const [error, setError] = useState("");
 
-  const submit = (event) => {
+  const submit = async (event) => {
     event.preventDefault();
     setError("");
-    const accounts = JSON.parse(
-      localStorage.getItem("moglog_accounts") || "[]",
-    );
 
-    if (mode === "register") {
-      if (!name.trim() || !password.trim())
-        return setError("表示名とパスワードを入力してください");
-      let id;
-      do {
-        id = `MG-${Math.floor(1000 + Math.random() * 9000)}`;
-      } while (accounts.some((item) => item.userId === id));
-      const account = {
-        userId: id,
-        name: name.trim(),
-        password,
-        profile: null,
-      };
-      accounts.push(account);
-      localStorage.setItem("moglog_accounts", JSON.stringify(accounts));
+    try {
+      if (mode === "register") {
+        if (!name.trim() || !password.trim())
+          return setError("表示名とパスワードを入力してください");
+        if (password.length < 6)
+          return setError("パスワードは6文字以上にしてください");
+        const account = await register(name.trim(), password);
+        onLogin(account);
+        return;
+      }
+
+      const account = await login(userId, password);
       onLogin(account);
-      return;
+    } catch {
+      setError(
+        mode === "register"
+          ? "登録に失敗しました"
+          : "ユーザーIDまたはパスワードが違います",
+      );
     }
-
-    const account = accounts.find(
-      (item) => item.userId === userId.trim() && item.password === password,
-    );
-    if (account) onLogin(account);
-    else setError("ユーザーIDまたはパスワードが違います");
   };
 
   return (
@@ -250,7 +255,9 @@ function ProfileSetup({ account, onSave }) {
     <main className="setup-screen">
       <div className="setup-illustration">🍽️</div>
       <h1>あなたの好みは？？</h1>
-      <p className="setup-subtitle">あなたの投稿が他の人の参考になりやすくなります。</p>
+      <p className="setup-subtitle">
+        あなたの投稿が他の人の参考になりやすくなります。
+      </p>
       <section className="profile-form">
         <label>
           好きな食べ物 <span>任意</span>
@@ -270,22 +277,28 @@ function ProfileSetup({ account, onSave }) {
                   : "scale-options"
               }
             >
-              {(key === "濃さ" ? [0, 1, 2, 3, 4] : [0, 1, 2, 3, 4]).map((value) => (
-                <button
-                  key={value}
-                  type="button"
-                  className={preferences[key] === value ? "selected" : ""}
-                  onClick={() =>
-                    setPreferences((old) => ({ ...old, [key]: value }))
-                  }
-                >
-                  <span>
-                    {key === "濃さ"
-                      ? ["薄味", "やや薄", "普通", "やや濃い", "濃い味"][value]
-                      : ["苦手", "やや苦手", "普通", "やや好き", "好き"][value]}
-                  </span>
-                </button>
-              ))}
+              {(key === "濃さ" ? [0, 1, 2, 3, 4] : [0, 1, 2, 3, 4]).map(
+                (value) => (
+                  <button
+                    key={value}
+                    type="button"
+                    className={preferences[key] === value ? "selected" : ""}
+                    onClick={() =>
+                      setPreferences((old) => ({ ...old, [key]: value }))
+                    }
+                  >
+                    <span>
+                      {key === "濃さ"
+                        ? ["薄味", "やや薄", "普通", "やや濃い", "濃い味"][
+                            value
+                          ]
+                        : ["苦手", "やや苦手", "普通", "やや好き", "好き"][
+                            value
+                          ]}
+                    </span>
+                  </button>
+                ),
+              )}
             </div>
           </div>
         ))}
@@ -408,7 +421,9 @@ function LegacyPostCard({
         )}
         {activeAction === "map" && (
           <div className="inline-place">
-            <b><ReverseLocationName post={post} /></b>
+            <b>
+              <ReverseLocationName post={post} />
+            </b>
             <LocationMap post={post} className="inline-location-map" />
           </div>
         )}
@@ -499,12 +514,15 @@ function CreatePost({ account, onCancel, onCreate }) {
   const [comment, setComment] = useState("");
   const [gps, setGps] = useState(null);
   const [pin, setPin] = useState(null);
-  const [locationStatus, setLocationStatus] = useState("写真を選ぶと位置情報を確認できます");
+  const [locationStatus, setLocationStatus] =
+    useState("写真を選ぶと位置情報を確認できます");
 
   const selectPosition = async (position) => {
     setPin(position);
     setGps(position);
-    setLocationStatus("位置情報が設定されています。ピンをドラッグして調整できます。");
+    setLocationStatus(
+      "位置情報が設定されています。ピンをドラッグして調整できます。",
+    );
     setCity(await getCityName(position));
   };
 
@@ -515,22 +533,31 @@ function CreatePost({ account, onCancel, onCreate }) {
     try {
       const position = await exifr.gps(file);
       if (position?.latitude != null && position?.longitude != null) {
-        const photoPosition = { latitude: position.latitude, longitude: position.longitude };
+        const photoPosition = {
+          latitude: position.latitude,
+          longitude: position.longitude,
+        };
         setGps(photoPosition);
         setPin(photoPosition);
         setCity(await getCityName(photoPosition));
-        setLocationStatus("写真から位置情報を取得しました。ピンをドラッグして調整できます。");
+        setLocationStatus(
+          "写真から位置情報を取得しました。ピンをドラッグして調整できます。",
+        );
       } else {
         setGps(null);
         setPin(null);
         setCity("");
-        setLocationStatus("この写真には位置情報がありません。地図をタップしてピンを設定できます。");
+        setLocationStatus(
+          "この写真には位置情報がありません。地図をタップしてピンを設定できます。",
+        );
       }
     } catch {
       setGps(null);
       setPin(null);
       setCity("");
-      setLocationStatus("位置情報を読み取れませんでした。地図をタップしてピンを設定できます。");
+      setLocationStatus(
+        "位置情報を読み取れませんでした。地図をタップしてピンを設定できます。",
+      );
     }
 
     let uploadFile = file;
@@ -658,7 +685,10 @@ function CreatePost({ account, onCancel, onCreate }) {
               </small>
             </>
           )}
-          <div className="leaflet-location-map" aria-label="地図上のピン。タップまたはドラッグで位置を変更できます">
+          <div
+            className="leaflet-location-map"
+            aria-label="地図上のピン。タップまたはドラッグで位置を変更できます"
+          >
             <LocationMap
               position={pin}
               editable
@@ -701,7 +731,9 @@ function CreatePost({ account, onCancel, onCreate }) {
             placeholder="みんなに感想を伝えましょう。"
           />
         </label>
-        <button className="create-submit-button" onClick={submit}>投稿する</button>
+        <button className="create-submit-button" onClick={submit}>
+          投稿する
+        </button>
       </section>
     </main>
   );
@@ -750,7 +782,9 @@ function MapModal({ post, onClose }) {
         <button className="modal-close" onClick={onClose}>
           ×
         </button>
-        <h2><ReverseLocationName post={post} /></h2>
+        <h2>
+          <ReverseLocationName post={post} />
+        </h2>
         <LocationMap post={post} className="big-location-map" />
       </section>
     </div>
@@ -781,7 +815,9 @@ function SavedPostModal({ post, onClose, onComment, accountName, onSave }) {
         <div className="saved-detail-copy">
           <b>{post.name}</b>
           <Stars value={post.rating} />
-          <h3><ReverseLocationName post={post} /></h3>
+          <h3>
+            <ReverseLocationName post={post} />
+          </h3>
           {activeAction === "photo" && (
             <p className="saved-photo-comment">
               {post.comment || "コメントはありません"}
@@ -819,7 +855,9 @@ function SavedPostModal({ post, onClose, onComment, accountName, onSave }) {
           )}
           {activeAction === "map" && (
             <div className="inline-place">
-              <b><ReverseLocationName post={post} /></b>
+              <b>
+                <ReverseLocationName post={post} />
+              </b>
               <LocationMap post={post} className="inline-location-map" />
             </div>
           )}
@@ -845,7 +883,13 @@ function SavedPostModal({ post, onClose, onComment, accountName, onSave }) {
           >
             📍
           </button>
-          <button className={post.saved ? "active-save-action" : ""} onClick={() => onSave(post.id)} aria-label="保存">📁</button>
+          <button
+            className={post.saved ? "active-save-action" : ""}
+            onClick={() => onSave(post.id)}
+            aria-label="保存"
+          >
+            📁
+          </button>
         </div>
       </section>
     </div>
@@ -1064,75 +1108,129 @@ function App() {
     account ? (account.profile ? "home" : "setup") : "auth",
   );
   const [tab, setTab] = useState("home");
-  const [posts, setPosts] = useState(
-    () =>
-      JSON.parse(localStorage.getItem("moglog_posts") || "null") || seedPosts,
-  );
+  const [posts, setPosts] = useState([]);
   const [modalPost, setModalPost] = useState(null);
   const [mapPost, setMapPost] = useState(null);
   const [savedPost, setSavedPost] = useState(null);
   const [socialType, setSocialType] = useState(null);
   const [toast, setToast] = useState("");
 
-  useEffect(
-    () => localStorage.setItem("moglog_posts", JSON.stringify(posts)),
-    [posts],
-  );
+  const loadPosts = async () => {
+    try {
+      setPosts(await fetchPosts());
+    } catch (e) {
+      console.log("load posts error:", e.message);
+    }
+  };
+
+  const [counts, setCounts] = useState({ following: 0, followers: 0 });
+
+  const loadCounts = async () => {
+    try {
+      setCounts(await fetchCounts());
+    } catch (e) {
+      console.log("load counts error:", e.message);
+    }
+  };
 
   useEffect(() => {
-  const testConnection = async () => {
-    const { data, error } = await supabase
-      .from('users')
-      .select('*')
-
-    console.log('data:', data)
-    console.log('error:', error)
-  }
-
-  testConnection()
-}, [])
+    if (account) {
+      loadPosts();
+      loadCounts();
+    }
+  }, [account?.userId]);
 
   const login = (nextAccount) => {
     setAccount(nextAccount);
     localStorage.setItem("moglog_current", JSON.stringify(nextAccount));
     setScreen(nextAccount.profile ? "home" : "setup");
   };
-  const saveProfile = (profile) => {
+
+  // 好み設定をSupabaseのprofilesへ保存する
+  const saveProfile = async (profile) => {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    const { error } = await supabase
+      .from("profiles")
+      .update({
+        favorite_foods: profile.favoriteFoods,
+        spicy_pref: profile["辛さ"],
+        sweet_pref: profile["甘さ"],
+        strength_pref: profile["濃さ"],
+      })
+      .eq("id", user.id);
+
+    if (error) {
+      console.log("profile save error:", error.message);
+      alert("好みの保存に失敗しました");
+      return;
+    }
+
     const next = { ...account, profile };
     setAccount(next);
     localStorage.setItem("moglog_current", JSON.stringify(next));
-    const accounts = JSON.parse(
-      localStorage.getItem("moglog_accounts") || "[]",
-    ).map((item) => (item.userId === next.userId ? next : item));
-    localStorage.setItem("moglog_accounts", JSON.stringify(accounts));
     setScreen("home");
   };
-  const updateName = (name) => {
+
+  // 表示名をSupabaseのprofilesへ保存する
+  const updateName = async (name) => {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    const { error } = await supabase
+      .from("profiles")
+      .update({ display_name: name })
+      .eq("id", user.id);
+
+    if (error) {
+      console.log("name update error:", error.message);
+      alert("表示名の変更に失敗しました");
+      return;
+    }
+
     const next = { ...account, name };
     setAccount(next);
     localStorage.setItem("moglog_current", JSON.stringify(next));
-    const accounts = JSON.parse(localStorage.getItem("moglog_accounts") || "[]").map((item) => item.userId === next.userId ? next : item);
-    localStorage.setItem("moglog_accounts", JSON.stringify(accounts));
   };
-  const toggleSave = (id) => {
-    // toggleSave：対象投稿のsavedだけ反転し、配列全体を新しくして再描画させる。
+
+  const toggleSave = async (id) => {
+    const target = posts.find((p) => p.id === id);
+    if (!target) return;
+    const nextSaved = !target.saved;
+
+    // 先に画面を更新し、失敗したら元に戻す
     setPosts((old) =>
-      old.map((post) =>
-        post.id === id ? { ...post, saved: !post.saved } : post,
+      old.map((p) => (p.id === id ? { ...p, saved: nextSaved } : p)),
+    );
+    try {
+      await toggleSaveRemote(id, nextSaved);
+    } catch (e) {
+      console.log("save error:", e.message);
+      setPosts((old) =>
+        old.map((p) => (p.id === id ? { ...p, saved: !nextSaved } : p)),
+      );
+      alert("保存に失敗しました");
+    }
+  };
+
+  const addComment = async (id, text) => {
+    try {
+      await addCommentRemote(id, text);
+    } catch (e) {
+      console.log("comment error:", e.message);
+      alert("コメントの送信に失敗しました");
+      return;
+    }
+    setPosts((old) =>
+      old.map((p) =>
+        p.id === id
+          ? { ...p, comments: [...p.comments, { name: account.name, text }] }
+          : p,
       ),
     );
   };
-  const addComment = (id, text) =>
-    setPosts((old) =>
-      old.map((post) =>
-        post.id === id
-          ? {
-              ...post,
-              comments: [...post.comments, { name: account.name, text }],
-            }
-          : post,
-      ),
-    ); // addComment：対象投稿のcomments配列末尾へ現在ログインユーザー名と本文を追加する。
+
   const openProfile = (post) =>
     setModalPost(
       post.profile
@@ -1145,22 +1243,40 @@ function App() {
                 : post.profile,
           },
     );
-  const createPost = (post) => {
-    setPosts((old) => [{ ...post, profile: account.profile }, ...old]);
-    setScreen("home");
-    setTab("home");
-  }; // createPost：新しい投稿オブジェクトを配列先頭へ追加し、ホーム画面へ戻る。
-  const deletePost = (postId) => {
-    setPosts((old) => old.filter((post) => post.id !== postId));
-    setSavedPost(null);
-  }; // deletePost：対象投稿ID以外だけを残して配列から削除し、保存詳細モーダルも閉じる。
 
-  const logout = () => {
+  const createPost = async (post) => {
+    try {
+      await createPostRemote(post);
+      await loadPosts();
+      setScreen("home");
+      setTab("home");
+    } catch (e) {
+      console.log("create post error:", e.message);
+      alert("投稿に失敗しました");
+    }
+  };
+
+  const deletePost = async (postId) => {
+    const target = posts.find((p) => p.id === postId);
+    if (!target) return;
+    try {
+      await deletePostRemote(target);
+    } catch (e) {
+      console.log("delete post error:", e.message);
+      alert("削除に失敗しました");
+      return;
+    }
+    setPosts((old) => old.filter((p) => p.id !== postId));
+    setSavedPost(null);
+  };
+  // logout：Supabaseのセッションを切り、アカウント状態とタブをリセットしてログイン画面へ戻す。
+  const logout = async () => {
+    await supabase.auth.signOut();
     localStorage.removeItem("moglog_current");
     setAccount(null);
     setTab("home");
     setScreen("auth");
-  }; // logout：moglog_currentを削除し、アカウント状態とタブをリセットしてログイン画面へ戻す。
+  };
 
   /*
    * App（アプリ全体の親コンポーネント）
@@ -1172,30 +1288,100 @@ function App() {
 
   // screenがauthならログイン画面、setupなら初回好み設定だけを表示する。
   if (screen === "auth") return <AuthScreen onLogin={login} />;
-  if (screen === "setup") return <ProfileSetup account={account} onSave={saveProfile} />;
+  if (screen === "setup")
+    return <ProfileSetup account={account} onSave={saveProfile} />;
 
   // 通常画面では投稿作成・ホーム・マイページを同じapp-shell内へ描画し、下部ナビで切り替える。
   return (
     <div className="app-shell">
       {screen === "create" ? (
-        <CreatePost account={account} onCancel={() => setScreen("home")} onCreate={createPost} />
+        <CreatePost
+          account={account}
+          onCancel={() => setScreen("home")}
+          onCreate={createPost}
+        />
       ) : tab === "home" ? (
-        <Home posts={posts} onSave={toggleSave} onComment={addComment} onProfile={openProfile} onMap={setMapPost} onCreate={() => setScreen("create")} accountName={account?.name} />
+        <Home
+          posts={posts}
+          onSave={toggleSave}
+          onComment={addComment}
+          onProfile={openProfile}
+          onMap={setMapPost}
+          onCreate={() => setScreen("create")}
+          accountName={account?.name}
+        />
       ) : (
-        <MyPage account={account} posts={posts} onEditProfile={() => setScreen("setup")} onEditPreferences={() => setScreen("setup")} onUpdateName={updateName} onOpenSavedPost={setSavedPost} onOpenOwnPost={setSavedPost} onCopyId={() => { setToast("ユーザーIDをコピーしました"); setTimeout(() => setToast(""), 1800); }} onSocial={setSocialType} onDeletePost={deletePost} onLogout={logout} />
+        <MyPage
+          account={account}
+          posts={posts}
+          counts={counts}
+          onEditProfile={() => setScreen("setup")}
+          onEditPreferences={() => setScreen("setup")}
+          onUpdateName={updateName}
+          onOpenSavedPost={setSavedPost}
+          onOpenOwnPost={setSavedPost}
+          onCopyId={() => {
+            setToast("ユーザーIDをコピーしました");
+            setTimeout(() => setToast(""), 1800);
+          }}
+          onSocial={setSocialType}
+          onDeletePost={deletePost}
+          onLogout={logout}
+        />
       )}
 
       {screen !== "create" && (
         <nav className="bottom-nav">
-          <button className={tab === "home" ? "active" : ""} onClick={() => { setTab("home"); setScreen("home"); }}><span>⌂</span><small>ホーム</small></button>
-          <button className={tab === "mypage" ? "active" : ""} onClick={() => { setTab("mypage"); setScreen("home"); }}><span>♙</span><small>マイページ</small></button>
+          <button
+            className={tab === "home" ? "active" : ""}
+            onClick={() => {
+              setTab("home");
+              setScreen("home");
+            }}
+          >
+            <span>⌂</span>
+            <small>ホーム</small>
+          </button>
+          <button
+            className={tab === "mypage" ? "active" : ""}
+            onClick={() => {
+              setTab("mypage");
+              setScreen("home");
+            }}
+          >
+            <span>♙</span>
+            <small>マイページ</small>
+          </button>
         </nav>
       )}
 
-      {modalPost && <ProfileModal post={modalPost} onClose={() => setModalPost(null)} />}
+      {modalPost && (
+        <ProfileModal post={modalPost} onClose={() => setModalPost(null)} />
+      )}
       {mapPost && <MapModal post={mapPost} onClose={() => setMapPost(null)} />}
-      {savedPost && <SavedPostModal post={savedPost} onClose={() => setSavedPost(null)} onComment={addComment} accountName={account?.name} onSave={(id) => { const target = posts.find((post) => post.id === id); toggleSave(id); if (target?.saved) setSavedPost(null); }} />}
-      {socialType && <SocialListModal type={socialType} onClose={() => setSocialType(null)} />}
+      {savedPost && (
+        <SavedPostModal
+          post={posts.find((p) => p.id === savedPost.id) || savedPost}
+          onClose={() => setSavedPost(null)}
+          onComment={addComment}
+          accountName={account?.name}
+          onSave={(id) => {
+            const target = posts.find((post) => post.id === id);
+            toggleSave(id);
+            if (target?.saved) setSavedPost(null);
+          }}
+        />
+      )}
+      {socialType && (
+        <SocialListModal
+          type={socialType}
+          onClose={() => {
+            setSocialType(null);
+            loadCounts();
+            loadPosts();
+          }}
+        />
+      )}
       {toast && <div className="toast">{toast}</div>}
     </div>
   );
