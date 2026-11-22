@@ -229,6 +229,10 @@
   color: #71aabd;
 }
 
+.empty{
+  white-space: nowrap;
+}
+
 /* サムネイルを並べる部分: 3列。minmax(0, 1fr) は、写真が大きくても列がはみ出さないための指定 */
 .mypage-screen .own-posts > div,
 .mypage-screen .saved-posts > div {
@@ -546,15 +550,15 @@
   margin: 0;
 }
 
-/* 削除関連のボタンの共通の見た目: 薄い赤系の小さなボタン（あとの指定で上書きされる部分もある） */
+/* 削除関連のボタン共通設定 */
 .delete-mode-button,
 .cancel-delete,
 .delete-selected,
 .own-post-select,
-.own-post-delete {
+.own-post-delete,
+.delete-selected-button {
   border: 1px solid #efddd8;
   height: 28px;
-  width: 35px;
   border-radius: 10px;
   background: #fff9f7;
   color: #b95f50;
@@ -562,78 +566,63 @@
   font-size: 11px;
   white-space: nowrap;
 }
+
+/* 削除モードボタンと削除実行ボタン */
 .delete-mode-button,
 .delete-selected-button {
-  border: 1px solid #efddd8;
-  height: 28px;
-  border-radius: 10px;
-  background: #fff9f7;
-  color: #b95f50;
-  padding: 7px 9px;
+  border-color: #efbfb8;
+  border-radius: 9px;
+  background: #ffe9e6;
+  color: #a94f43;
+  padding: 5px 8px;
   font-size: 11px;
+  line-height: 1.1;
+  font-weight: 800;
+  box-shadow: none;
+  min-width: 55px;
 }
-/* 「削除」（選んだ投稿を消すボタン）: 1つも選んでいないときは、薄くして押せない見た目にする */
+
+/* 削除ボタン */
 .delete-selected-button {
   width: 100%;
   margin: 0 0 10px;
 }
+
+/* 削除する投稿が選ばれていない場合 */
 .delete-selected-button:disabled {
   opacity: 0.45;
 }
-/* 削除モード中の右側: 「削除」と「キャンセル」を横に並べる */
+
+/* 削除モード中のボタンを横並びにする */
 .own-delete-actions {
   display: flex;
   align-items: center;
   gap: 6px;
 }
+
 .own-delete-actions .delete-selected-button {
   width: auto;
   margin: 0;
 }
+
 .own-delete-actions .delete-mode-button {
   margin: 0;
 }
 
-/* 写真の上にチェックマークを重ねるため、写真のボタンを基準位置にする */
+
+
+/* 投稿画像の位置を基準にする */
 .own-post-image {
   position: relative;
 }
-.own-post-item .own-post-image {
-  position: relative;
-}
-/* 選んだ投稿の目印: オレンジの枠（outline と border の両方で指定している） */
-.own-post-item.selected {
-  outline: 3px solid var(--orange);
-}
+
+/* 選択した投稿の枠 */
 .own-post-item.selected {
   border: 3px solid var(--orange);
 }
-/* 写真の右上に出る、丸いチェックマーク（選ぶと「✓」が入る） */
-.own-post-image .post-check {
-  position: absolute;
-  right: 6px;
-  top: 6px;
-  width: 24px;
-  height: 24px;
-  display: grid;
-  place-items: center;
-  border-radius: 50%;
-  background: var(--orange);
-  color: white;
-}
+
+/* 写真の右上に表示するチェックマーク */
 .post-check {
-  position: absolute;
-  right: 7px;
-  top: 7px;
-  width: 24px;
-  height: 24px;
-  display: grid;
-  place-items: center;
-  border-radius: 50%;
-  background: var(--orange);
-  color: white;
-}
-.own-post-item .post-check {
   position: absolute;
   right: 7px;
   top: 7px;
@@ -647,23 +636,6 @@
   font-weight: 800;
 }
 
-/* 削除ボタンの最終的な見た目: 見出し文字より少し大きい、薄い赤のボタン。
- * !important で、上にある同じクラスの指定を上書きする（ここが最優先） */
-.own-post-header > .delete-mode-button,
-.own-delete-actions .delete-selected-button {
-  min-width: 55px !important;
-  min-height: 28px !important;
-  border: 1px solid #efbfb8 !important;
-  border-radius: 9px !important;
-  background: #ffe9e6 !important;
-  color: #a94f43 !important;
-  padding: 5px 8px !important;
-  font-size: 11px !important;
-  line-height: 1.1 !important;
-  font-weight: 800 !important;
-  box-shadow: none !important;
-  white-space: nowrap !important;
-}
 
 /* 保存投稿の詳細モーダルの枠線をなくす（Common.css の指定を上書き）。
  * 中をスクロールしても、右上の「×」ボタンが残るようにする */
@@ -775,6 +747,7 @@
 .saved-post-actions button.saved {
   background: #fff4e7;
 }
+
 
 /* 以前の、フォロー一覧の中に出していた削除確認 */
 .social-confirm {

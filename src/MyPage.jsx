@@ -958,6 +958,7 @@ export default function MyPage({
 
             // 保存した投稿がない場合の表示。
             <p className="empty">保存した投稿はまだありません</p>
+            
           )}
 
         </div>
