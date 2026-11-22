@@ -201,6 +201,10 @@
   font-size: 11px;
 }
 
+.social-counts button.notify {
+  border: 2px solid orange;
+}
+
 /* ───────────────────────────────────────────────────────────
  * 5. 投稿の一覧（保存した投稿・自分の投稿）
  *    それぞれ白いカードに入れ、中の写真を3列の正方形のサムネイルで並べる。
@@ -474,15 +478,22 @@
 .follower-delete-button {
   border: 0;
   border-radius: 12px;
-  background: #edf8fa;
+  background: #bce5ed;
   color: #64a7b5;
   padding: 7px 9px;
   font-size: 11px;
+  white-space: nowrap;
 }
 .follower-delete-button {
   background: #fff5f2;
   color: #b95f50;
   border: 1px solid #f1ddd8;
+}
+
+.following-button{
+  background: #bce5ed;
+  color: #64a7b5;
+  border: 1px solid #d9e8eb;
 }
 
 /* 削除確認のダイアログ（「本当に削除しますか？」）: 画面の中央に重ねて表示する */
