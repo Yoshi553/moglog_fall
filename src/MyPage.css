@@ -560,6 +560,7 @@
   color: #b95f50;
   padding: 7px 9px;
   font-size: 11px;
+  white-space: nowrap;
 }
 .delete-mode-button,
 .delete-selected-button {
@@ -661,6 +662,7 @@
   line-height: 1.1 !important;
   font-weight: 800 !important;
   box-shadow: none !important;
+  white-space: nowrap !important;
 }
 
 /* 保存投稿の詳細モーダルの枠線をなくす（Common.css の指定を上書き）。
