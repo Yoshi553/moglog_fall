@@ -99,9 +99,9 @@ const toPost = (row, savedIds) => {
     // 未設定のときは「普通」を表す 2 を入れる
     profile: {
       favoriteFoods: a.favorite_foods || "",
-      辛さ: a.spicy_pref ?? 2,
-      甘さ: a.sweet_pref ?? 2,
-      濃さ: a.strength_pref ?? 2,
+      辛さ: a.spicy_pref ?? '未設定',
+      甘さ: a.sweet_pref ?? '未設定',
+      濃さ: a.strength_pref ?? '未設定',
     },
   };
 };

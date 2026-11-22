@@ -150,7 +150,7 @@ function AuthScreen({ onLogin }) {
         <span>ろぐ</span>
       </div>
       <h1 className="brand-name">もぐろぐ</h1>
-      <p className="tagline">おいしいを記録しよう</p>
+      <p className="tagline">「ほんとう」を記録しよう</p>
       <form className="auth-card" onSubmit={submit}>
         {/* モードに応じて入力欄を出し分ける */}
         {mode === "register" ? (
