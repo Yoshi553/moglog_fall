@@ -1,28 +1,50 @@
-/* ホーム画面CSSの役割
- * .home-screenはフィード全体の最小高さと背景領域を決める。
- * .filtersは星評価・表示名の絞り込み欄を横並びへ配置し、スマホ幅でも縮小可能にする。
- * .feed-gridはスマホでは1列の縦スクロール、幅が広い端末でも中央に最大560pxへ収める投稿一覧。
- * .post-cardは白背景・細い枠・角丸・下向き影でカードを立体的にする。
- * .post-authorと.avatarは投稿者アイコンと表示名、右側の評価を左右配置する。
- * .post-photoは投稿写真をカード幅いっぱいへ表示し、投稿写真の高さを画像比率に合わせる。
- * .post-actionsは3等分のアクションバー。💬・📍・📁を区切り線付きで並べる。
- * .active-actionと.saved-actionは選択中のアイコン領域だけオレンジ系背景へ変える。
- * .photo-commentは本文を通常2行へ制限し、expandedクラスが付くと全文表示へ切り替える。
- * .chat-row.mine/.otherは入力者コメントを右、その他ユーザーコメントを左へ配置する。
- * .inline-place/.inline-map/.map-pinは店名とピン付き地図をカード内へ表示する。
+/*
+ * =====================================================================
+ * Home.css ― ホーム画面（投稿の一覧）のスタイル
+ * =====================================================================
+ *
+ * 【役割】
+ * Home.jsx が表示する、投稿フィードの見た目を決める。
+ * 色の変数（--line / --orange-deep / --blue など）は Common.css で定義したものを使う。
+ *
+ * 【ホーム画面の構造】
+ *   .home-screen        … ホーム画面全体
+ *     .filters          … 絞り込み欄（星評価・人・市）
+ *     .feed-grid        … 投稿カードを縦に並べる一覧
+ *       .post-card      … 投稿1件分のカード
+ *         .post-author  … 上部: 投稿者（アイコン・名前）と星評価
+ *         .post-photo   … 写真
+ *         .post-actions … 💬 コメント / 📍 地図 / 📁 保存 の3つのボタン
+ *         .post-detail  … 下部: 本文・コメント一覧・地図（ボタンで切り替わる）
+ *
+ * 【このファイルの構成】
+ *   1. 画面全体と絞り込み欄
+ *   2. 投稿一覧とカード
+ *   3. カード上部（投稿者・星評価）
+ *   4. 写真
+ *   5. アクションバー（💬 📍 📁）
+ *   6. 本文
+ *   7. コメント欄
+ *   8. 地図表示
+ *   9. PC幅での調整
  */
 
-/* ホーム画面全体: 投稿フィードと絞り込み領域の背景 */
+/* ───────────────────────────────────────────────────────────
+ * 1. 画面全体と絞り込み欄
+ * ─────────────────────────────────────────────────────────── */
+
+/* ホーム画面全体: 画面の高さいっぱいまで広げる */
 .home-screen {
   min-height: 100vh;
 }
 
-/* 投稿絞り込み: 星評価と表示名を横並びの選択欄で絞る */
+/* 絞り込み欄: 星評価・人・市のセレクトを横一列に並べる */
 .filters {
   display: flex;
   gap: 8px;
   padding: 12px 14px 8px;
 }
+/* 各セレクト: 幅を均等に分け合う。min-width: 0 は、狭い画面でも欄が縮められるようにする指定 */
 .filters select {
   flex: 1;
   min-width: 0;
@@ -33,7 +55,11 @@
   padding: 8px 10px;
 }
 
-/* 投稿一覧: スマホでは1列の縦スクロールカードとして表示する */
+/* ───────────────────────────────────────────────────────────
+ * 2. 投稿一覧とカード
+ * ─────────────────────────────────────────────────────────── */
+
+/* 投稿一覧: スマホでは1列の縦スクロール。幅が広い端末でも、最大560pxで中央に寄せる */
 .feed-grid {
   display: grid;
   grid-template-columns: 1fr;
@@ -42,16 +68,20 @@
   max-width: 560px;
   margin: auto;
 }
+/* 投稿カード: 白背景・細い枠・角丸・薄い影で、浮いたカードに見せる */
 .post-card {
   min-width: 0;
   background: white;
   border: 1px solid #edf1f1;
   border-radius: 14px;
-  overflow: hidden;
+  overflow: hidden; /* 角丸からはみ出す写真を切り取る */
   box-shadow: 0 5px 18px rgba(78, 123, 133, 0.07);
 }
 
-/* 投稿カード上部: アイコン・表示名と星評価を左右に配置 */
+/* ───────────────────────────────────────────────────────────
+ * 3. カード上部（投稿者・星評価）
+ *    左に投稿者のアイコンと名前、右に星評価を配置する。
+ * ─────────────────────────────────────────────────────────── */
 .post-author {
   height: 55px;
   display: flex;
@@ -59,6 +89,7 @@
   justify-content: space-between;
   padding: 7px 8px;
 }
+/* 投稿者のアイコンと名前。押すとプロフィールのモーダルが開く */
 .author-button {
   border: 0;
   background: transparent;
@@ -69,21 +100,24 @@
   padding: 0;
   color: #4d5d64;
 }
+/* 名前が長いときは、60pxで切って「…」で省略する */
 .author-button b {
   max-width: 60px;
   overflow: hidden;
   text-overflow: ellipsis;
 }
+/* 投稿者の丸いアイコン（表示名の1文字目が入る） */
 .avatar {
   display: grid;
   place-items: center;
   width: 34px;
   height: 34px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #21dfed, #cfeff5);
+  background: linear-gradient(135deg, #a9dfea, #cfeff5);
   color: #66818a;
   font-weight: 900;
 }
+/* 星評価（⭐️ 4.5）: オレンジ系の文字で、折り返さず1行に収める */
 .stars {
   color: #f5a44f;
   white-space: nowrap;
@@ -92,25 +126,34 @@
   letter-spacing: -1px;
 }
 
-/* 投稿写真: カード幅いっぱいに縦横比を保たず表示する */
+/* ───────────────────────────────────────────────────────────
+ * 4. 写真
+ * ─────────────────────────────────────────────────────────── */
+
+/* 写真の枠: カード幅いっぱいに広げる。読み込み中は薄い灰色の背景が見える */
 .post-photo {
   width: 100%;
   background: #edf4f4;
 }
+/* 写真: 幅をカードに合わせ、高さは写真の縦横比に合わせて自動で決める */
 .post-photo img {
   width: 100%;
   height: auto;
   object-fit: cover;
-  display: block;
+  display: block; /* 画像の下に余分な隙間ができるのを防ぐ */
 }
 
-/* 投稿アクション: コメント・地図・保存を区切り線付きで3等分 */
+/* ───────────────────────────────────────────────────────────
+ * 5. アクションバー（💬 コメント / 📍 地図 / 📁 保存）
+ *    3つのボタンを同じ幅で横に並べ、間に区切り線を入れる。
+ * ─────────────────────────────────────────────────────────── */
 .post-actions {
   display: flex;
   height: 54px;
   align-items: center;
   border-bottom: 1px solid #f1f4f4;
 }
+/* 3つのボタンを3等分（33.33%ずつ）にする */
 .post-actions button {
   width: 33.33%;
   height: 100%;
@@ -118,29 +161,34 @@
   background: white;
   font-size: 19px;
 }
+/* 各ボタンの中身: 絵文字を上、コメント数などの小さな数字を下に縦に並べる */
 .post-action-button {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 1px;
-  border-right: 1px solid #edf2f2 !important;
+  border-right: 1px solid #edf2f2 !important; /* 右側に区切り線 */
 }
+/* 一番右のボタンだけ、区切り線をなくす */
 .post-action-button:last-child {
   border-right: 0 !important;
 }
 .post-action-button span {
   line-height: 20px;
 }
+/* 💬の下のコメント数 */
 .post-action-button small {
   color: #71858b;
   font-size: 11px;
   line-height: 11px;
 }
+/* いま開いている表示（コメント・地図）のボタン: 薄いオレンジの背景と枠線で目立たせる */
 .post-action-button.active-action {
   background: #ffe8cf !important;
   box-shadow: inset 0 0 0 1px #f3ad63;
 }
+/* 保存済みの📁の絵文字の周り: 薄い黄色の丸い背景を付ける */
 .post-action-button span.saved {
   background: #fff1d9;
   color: #f3ad63;
@@ -148,6 +196,7 @@
   padding: 1px 4px;
 }
 
+/* 保存済みの📁ボタン全体: 薄い黄色の背景と、オレンジの枠線 */
 .post-action-button.saved-action {
   background: #fff1d9 !important;
   border: 1px solid #f3ad63 !important;
@@ -158,8 +207,11 @@
   color: #f3ad63;
 }
 
-
-/* 投稿本文: 通常は2行まで表示し、以降は全文表示ボタンで展開 */
+/* ───────────────────────────────────────────────────────────
+ * 6. 本文
+ *    アクションバーの下のエリア。普通は投稿のコメント本文を表示し、
+ *    💬や📍を押すと、コメント欄や地図に切り替わる。
+ * ─────────────────────────────────────────────────────────── */
 .post-detail {
   min-height: 62px;
   padding: 7px 8px 9px;
@@ -170,6 +222,7 @@
   line-height: 1.55;
   color: #000000;
 }
+/* 本文は通常2行までにして、あふれた分は「…」で省略する */
 .photo-comment {
   display: -webkit-box;
   -webkit-box-orient: vertical;
@@ -177,11 +230,13 @@
   line-clamp: 2;
   overflow: hidden;
 }
+/* 「全文を読む」を押して expanded が付いたときは、制限を外して全文を表示する */
 .photo-comment.expanded {
   display: block;
   -webkit-line-clamp: unset;
   line-clamp: unset;
 }
+/* 「全文を読む／閉じる」の文字ボタン */
 .read-more {
   border: 0;
   background: transparent;
@@ -190,7 +245,12 @@
   font-size: 10px;
 }
 
-/* コメント領域: 投稿者以外と自分のコメントを左右に分ける */
+/* ───────────────────────────────────────────────────────────
+ * 7. コメント欄
+ *    チャットのように、自分のコメントを右、他の人のコメントを左に出す。
+ * ─────────────────────────────────────────────────────────── */
+
+/* コメント欄全体: 上に区切り線を入れる。多いときは、欄の中だけスクロールする */
 .comments-panel {
   margin-top: 8px;
   padding-top: 7px;
@@ -198,19 +258,23 @@
   max-height: 280px;
   overflow-y: auto;
 }
+/* コメント1件分の行 */
 .chat-row {
   display: flex;
   width: 100%;
   margin: 7px 0;
   align-items: flex-end;
 }
+/* 自分のコメント（mine）: row-reverse で並びを逆にして、右側に寄せる */
 .chat-row.mine {
   justify-content: flex-start;
   flex-direction: row-reverse;
 }
+/* 他の人のコメント（other）: 左側に寄せる */
 .chat-row.other {
   justify-content: flex-start;
 }
+/* コメントの横の小さなアイコン */
 .chat-avatar {
   flex: 0 0 18px;
   width: 18px;
@@ -218,12 +282,14 @@
   font-size: 10px;
   text-align: center;
 }
+/* アイコンと吹き出しの間の余白（自分は左側、他の人は右側） */
 .chat-row.mine .chat-avatar {
   margin-left: 6px;
 }
 .chat-row.other .chat-avatar {
   margin-right: 6px;
 }
+/* 吹き出しの共通部分: 名前を上、本文を下に縦に並べる */
 .chat-bubble {
   max-width: 82%;
   display: flex;
@@ -233,24 +299,29 @@
   font-size: 11px;
   line-height: 1.45;
 }
+/* 自分の吹き出し: 薄いオレンジ。右下の角だけ小さくして、右から話している形にする */
 .chat-row.mine .chat-bubble {
   background: #fff0df;
   color: #715e4c;
   border-radius: 14px 14px 4px 14px;
 }
+/* 他の人の吹き出し: 薄い水色。左下の角だけ小さくする */
 .chat-row.other .chat-bubble {
   background: #edf8fa;
   color: #53666d;
   border-radius: 14px 14px 14px 4px;
 }
+/* 吹き出しの中の名前 */
 .chat-bubble b {
   font-size: 10px;
 }
+/* コメントがまだないときのメッセージ */
 .no-comments {
   text-align: center;
   color: #91a0a4;
   font-size: 11px;
 }
+/* コメント入力欄と「送信」ボタンを横に並べる */
 .comment-form {
   display: flex;
   gap: 4px;
@@ -272,15 +343,24 @@
   font-size: 10px;
 }
 
-/* 地図表示: 地図内にお店名とピンをカード内へ表示する */
+/* ───────────────────────────────────────────────────────────
+ * 8. 地図表示
+ *    📍を押したとき、カードの中に店名（住所）と地図を表示する。
+ *    地図そのものの大きさは、Common.css の .inline-location-map で決めている。
+ * ─────────────────────────────────────────────────────────── */
 .inline-place {
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
+/* 店名・住所の文字 */
 .inline-place > b {
   color: #58747a;
 }
+/*
+ * 以下3つ（.inline-map / .inline-map .road / .map-pin）は、地図を自前で描いていた頃の名残。
+ * 今は Leaflet の地図に置き換わっているため、使われていない可能性がある。
+ */
 .inline-map {
   position: relative;
   height: 150px;
@@ -298,6 +378,10 @@
   font-size: 34px;
 }
 
+/* ───────────────────────────────────────────────────────────
+ * 9. PC幅（700px以上）での調整
+ *    一覧の幅はスマホと同じ560pxのまま、カードの角をスマホより少し丸くする。
+ * ─────────────────────────────────────────────────────────── */
 @media (min-width: 700px) {
   .feed-grid {
     max-width: 560px;

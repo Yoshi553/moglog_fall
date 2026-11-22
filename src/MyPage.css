@@ -1,15 +1,54 @@
-/* マイページ全体: ホーム画面と同じ淡い背景・白カード・オレンジ水色トーン */
+/*
+ * =====================================================================
+ * MyPage.css ― マイページのスタイル
+ * =====================================================================
+ *
+ * 【役割】
+ * MyPage.jsx が表示する、マイページと、そこから開くモーダルの見た目を決める。
+ * 色の変数（--orange / --orange-deep / --blue など）は Common.css で定義したものを使う。
+ *
+ * 【マイページの構造（上から順）】
+ *   .mypage-screen        … マイページ全体
+ *     .topbar             … ヘッダー（タイトルとログアウト。Common.css）
+ *     .my-profile         … プロフィール（アイコン・表示名・ユーザーID・編集ボタン）
+ *     .preference-summary … 私の好み（好きな食べ物・辛さ・甘さ・濃さ）
+ *     .social-counts      … フォロー数・フォロワー数・投稿数
+ *     .saved-posts        … 保存した投稿
+ *     .own-posts          … 自分の投稿（削除モードあり）
+ *
+ * 【マイページから開くモーダル】
+ *   .name-edit-modal      … 表示名の変更
+ *   .social-modal         … フォロー・フォロワーの一覧（友達追加・申請確認・削除確認を含む）
+ *
+ * 【このファイルの構成】
+ *   1. マイページ全体
+ *   2. プロフィール
+ *   3. 私の好み
+ *   4. フォロー・フォロワー・投稿数
+ *   5. 投稿の一覧（保存した投稿・自分の投稿）
+ *   6. 好み編集ヘッダーと表示名変更モーダル
+ *   7. フォロー・フォロワーのモーダル
+ *   8. 投稿の削除モード
+ *   9. 現在は使われていない可能性のあるスタイル
+ *
+ * 【注意】
+ * 同じクラスの指定が、ファイルの前後に分かれて重複している箇所がある
+ * （例: .delete-mode-button）。あとに書かれた指定が優先される。
+ * 削除ボタンの色や大きさを変えるときは、末尾の !important 付きの指定が最優先になる。
+ */
+
+/* ───────────────────────────────────────────────────────────
+ * 1. マイページ全体
+ * ─────────────────────────────────────────────────────────── */
 .mypage-screen {
   min-height: 100vh;
   background: #f7fbfc;
 }
 
-/*
- * .mypage-screen
- * マイページ全体の最小高さと背景色を指定し、ヘッダーから下ナビまで淡い水色系の統一レイアウトにする。
- */
-
-/* プロフィール上部: アイコン、ユーザーID、表示名、編集ボタンを中央配置 */
+/* ───────────────────────────────────────────────────────────
+ * 2. プロフィール
+ *    アイコン・表示名・ユーザーID・編集ボタンを、白いカードの中で縦に中央揃えにする。
+ * ─────────────────────────────────────────────────────────── */
 .mypage-screen .my-profile {
   display: grid;
   grid-template-columns: 1fr;
@@ -24,6 +63,7 @@
   box-shadow: 0 6px 18px rgba(78, 123, 133, 0.06);
 }
 
+/* 大きな丸いアイコン */
 .mypage-screen .my-profile .large-avatar {
   width: 76px;
   height: 76px;
@@ -35,18 +75,21 @@
   font-size: 16px;
 }
 
+/* ユーザーID（MG-1234）のボタン。押すとクリップボードにコピーされる */
 .mypage-screen .copy-id {
   border: 0;
   background: transparent;
   color: #70838a;
   padding: 0;
-  font-size: px;
+  font-size: px; /* ← 数値がないため無効な指定。文字の大きさは、ブラウザの標準になる */
 }
 
+/* ユーザーIDの横の📝アイコン */
 .mypage-screen .copy-id span {
   color: #56a0b1;
 }
 
+/* 「プロフィール編集」ボタン: 薄いオレンジ */
 .mypage-screen .edit-profile {
   margin-top: 4px;
   border: 1px solid #f2c79f;
@@ -57,13 +100,10 @@
   font-size: 11px;
 }
 
-/*
- * .my-profile
- * プロフィールカードを中央揃えの1列配置にし、アイコン・表示名・ユーザーID・編集ボタンを縦方向へ並べる。
- */
-
-/* 好み一覧: 好きな食べ物と辛さ・甘さ・濃さをカード内で整理 */
-/* 好み一覧 */
+/* ───────────────────────────────────────────────────────────
+ * 3. 私の好み
+ *    白いカードの中に、見出し・好きな食べ物・辛さ/甘さ/濃さをまとめる。
+ * ─────────────────────────────────────────────────────────── */
 .mypage-screen .preference-summary {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -76,13 +116,14 @@
   box-shadow: 0 6px 18px rgba(78, 123, 133, 0.06);
 }
 
+/* 見出し「私の好み」: 3列ぶんの幅を使って、中央に出す */
 .mypage-screen .preference-summary h3 {
   grid-column: 1 / -1;
   text-align: center;
   margin: 0 0 8px;
 }
 
-/* 好きな食べ物：横幅いっぱい */
+/* 好きな食べ物: 横幅いっぱいを使い、項目名を上、内容を下に縦に並べる */
 .mypage-screen .favorite-foods {
   grid-column: 1 / -1;
   display: flex;
@@ -93,7 +134,7 @@
   font-size: 12px;
 }
 
-/* 辛さ・甘さ・濃さ：横に3つ並べる */
+/* 辛さ・甘さ・濃さ: 横に3つ並べる */
 .mypage-screen .preference-scales {
   grid-column: 1 / -1;
   display: grid;
@@ -102,6 +143,7 @@
   padding-top: 12px;
 }
 
+/* 1項目分: 項目名を上、値を下に並べ、右側に区切り線を入れる */
 .mypage-screen .preference-scales p {
   display: flex;
   flex-direction: column;
@@ -112,23 +154,22 @@
   font-size: 12px;
 }
 
+/* 一番右（濃さ）だけ、区切り線をなくす */
 .mypage-screen .preference-scales p:last-child {
   border-right: 0;
 }
 
+/* 好みの値（普通・やや好きなど）: 読みやすい濃い文字で、太めに表示する */
 .mypage-screen .preference-summary span {
   color: #52666d;
   font-weight: 700;
 }
 
-/*
- * .copy-id
- * ユーザーIDをクリップボードへコピーする操作ボタン。文字を大きめにし、右側の📝だけでもコピーできる。
- * .preference-summary
- * 好きな食べ物と辛さ・甘さ・濃さを白カードへまとめ、好みの値を読みやすい濃い文字色で表示する。
- */
-
-/* フォロー・フォロワー・保存件数: 区切り線付きの3等分カード */
+/* ───────────────────────────────────────────────────────────
+ * 4. フォロー・フォロワー・投稿数
+ *    3つのボタンを同じ幅で並べ、間に縦の区切り線を入れる。
+ *    ボタンを押すと、フォロー／フォロワーの一覧モーダルが開く（投稿数は投稿一覧へスクロール）。
+ * ─────────────────────────────────────────────────────────── */
 .mypage-screen .social-counts {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -150,20 +191,20 @@
 .mypage-screen .social-counts button:last-child {
   border-right: 0;
 }
+/* 数字: 濃いオレンジ */
 .mypage-screen .social-counts strong {
   color: var(--orange-deep);
 }
+/* 数字の下のラベル（フォロー・フォロワー・投稿数） */
 .mypage-screen .social-counts span {
   color: #8e9ba0;
   font-size: 11px;
 }
 
-/*
- * .social-counts
- * フォロー・フォロワー・投稿数を3等分し、中央を区切る縦線とオレンジの数字を使う。
- */
-
-/* 投稿一覧: 自分の投稿と保存投稿をスマホで縦並びカードとして表示 */
+/* ───────────────────────────────────────────────────────────
+ * 5. 投稿の一覧（保存した投稿・自分の投稿）
+ *    それぞれ白いカードに入れ、中の写真を3列の正方形のサムネイルで並べる。
+ * ─────────────────────────────────────────────────────────── */
 .mypage-screen .own-posts,
 .mypage-screen .saved-posts {
   margin: 12px 14px;
@@ -174,6 +215,7 @@
   box-shadow: 0 6px 18px rgba(78, 123, 133, 0.06);
 }
 
+/* 見出し（保存した投稿 3 / 自分の投稿 5） */
 .mypage-screen .own-posts h3,
 .mypage-screen .saved-posts h3 {
   margin: 0 0 12px;
@@ -181,11 +223,13 @@
   text-align: left;
 }
 
+/* 見出しの横の件数: 水色 */
 .mypage-screen .own-posts h3 span,
 .mypage-screen .saved-posts h3 span {
   color: #71aabd;
 }
 
+/* サムネイルを並べる部分: 3列。minmax(0, 1fr) は、写真が大きくても列がはみ出さないための指定 */
 .mypage-screen .own-posts > div,
 .mypage-screen .saved-posts > div {
   display: grid;
@@ -193,6 +237,7 @@
   gap: 8px;
 }
 
+/* サムネイル1枚分のボタン: aspect-ratio: 1 で、正方形にそろえる */
 .mypage-screen .own-posts button,
 .mypage-screen .saved-posts button {
   width: 100%;
@@ -205,6 +250,7 @@
   box-shadow: 0 5px 18px rgba(78, 123, 133, 0.07);
 }
 
+/* サムネイルの写真: 正方形いっぱいに、縦横比を保ったまま切り抜いて表示する */
 .mypage-screen .own-posts button img,
 .mypage-screen .saved-posts button img {
   display: block;
@@ -213,7 +259,20 @@
   object-fit: cover;
 }
 
-/* 自分の投稿: 写真内右上に削除ボタンを表示する */
+/* 「保存した投稿」を「自分の投稿」より上に表示する（order が小さいほど上） */
+.mypage-screen .saved-posts {
+  order: 1;
+}
+.mypage-screen .own-posts {
+  order: 2;
+}
+/* order を効かせるため、マイページ全体を縦並びのレイアウト（flex）にする */
+.mypage-screen {
+  display: flex;
+  flex-direction: column;
+}
+
+/* 自分の投稿の1枚分（削除モードでは、選択の目印を重ねる） */
 .own-post-item {
   position: relative;
   aspect-ratio: 1;
@@ -226,32 +285,30 @@
   border: 0;
   padding: 0;
 }
-.own-post-item .own-post-delete {
-  position: absolute;
-  right: 6px;
-  bottom: 6px;
-  border: 0;
-  border-radius: 10px;
-  background: rgba(255, 255, 255, 0.94);
-  color: #b95f50;
-  padding: 6px 8px;
-  font-size: 11px;
-  box-shadow: 0 3px 10px rgba(78, 123, 133, 0.12);
-}
 
-/* マイページ下部: ログアウトを薄い赤系ボタンで表示する */
-.logout-button {
-  width: calc(100% - 28px);
-  margin: 4px 14px 90px;
-  border: 1px solid #efddd8;
-  border-radius: 14px;
-  background: #fff9f7;
-  color: #b95f50;
-  padding: 12px;
+/* 好み項目の見出し（好きな食べ物・辛さ・甘さ・濃さ）: 濃いオレンジの太字 */
+.mypage-screen .favorite-foods b,
+.mypage-screen .preference-scales b {
+  color: rgb(237, 134, 72);
   font-weight: 800;
 }
 
-/* 好み編集ヘッダーと表示名モーダル */
+/* ヘッダー右側の「ログアウト」ボタン: 小さな、薄い赤系のボタン */
+.header-logout {
+  border: 1px solid #efddd8;
+  border-radius: 12px;
+  background: #f2949156;
+  color: #b95f50;
+  padding: 6px 7px;
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+/* ───────────────────────────────────────────────────────────
+ * 6. 好み編集ヘッダーと表示名変更モーダル
+ * ─────────────────────────────────────────────────────────── */
+
+/* 「私の好み」の見出しと「編集」ボタンを、横に並べて中央に出す */
 .preference-header {
   grid-column: 1/-1;
   display: flex;
@@ -270,6 +327,8 @@
   padding: 5px 9px;
   font-size: 11px;
 }
+
+/* 表示名の変更モーダル（「プロフィール編集」を押すと開く） */
 .name-edit-modal {
   width: min(360px, calc(100% - 32px));
   background: white;
@@ -288,7 +347,29 @@
   margin-bottom: 12px;
 }
 
-/* フォロー・フォロワーの操作ボタンと申請一覧 */
+/* ───────────────────────────────────────────────────────────
+ * 7. フォロー・フォロワーのモーダル
+ *    下から出る縦のリスト。「友達追加」「申請確認」「削除確認」もここで使う。
+ * ─────────────────────────────────────────────────────────── */
+
+/* モーダル本体: スマホでは下から出る形。長いときは、中だけスクロールする */
+.social-modal {
+  width: 100%;
+  max-width: 520px;
+  max-height: 82vh;
+  overflow-y: auto;
+  background: white;
+  border-radius: 24px 24px 0 0;
+  padding: 22px 16px 30px;
+  position: relative;
+}
+
+.social-modal h2 {
+  margin: 4px 0 14px;
+  text-align: center;
+}
+
+/* 見出し（フォロー／フォロワー）と、横のボタン（友達追加／申請確認 ○）を並べる */
 .social-modal-header {
   display: flex;
   justify-content: center;
@@ -307,6 +388,8 @@
   padding: 7px 9px;
   font-size: 11px;
 }
+
+/* 友達追加: ユーザーIDの入力欄と「申請」ボタンを、横に並べる */
 .friend-search {
   display: grid;
   grid-template-columns: 1fr auto;
@@ -325,11 +408,14 @@
   background: var(--orange);
   color: white;
 }
+/* 申請の結果などのメッセージ（「申請を送りました」など） */
 .friend-message {
   text-align: center;
   color: #64a7b5;
   font-size: 12px;
 }
+
+/* 申請確認の1行: アイコン・名前・「許可」・「拒否」を横に並べる */
 .friend-request-row {
   display: grid;
   grid-template-columns: 42px 1fr auto auto;
@@ -352,7 +438,280 @@
   color: #718087;
 }
 
-/* 保存投稿カード: ホーム投稿と同じ文字色・サイズ・アクション形式 */
+/* 一覧の1人分: 下に区切り線を入れる */
+.social-list {
+  display: flex;
+  flex-direction: column;
+}
+.social-item {
+  border-bottom: 1px solid #edf2f2;
+}
+/* 1人分の中身: アイコン・名前・右端のボタンを横に並べる */
+.social-item-main {
+  min-height: 62px;
+  display: grid;
+  grid-template-columns: 46px 1fr auto;
+  align-items: center;
+  gap: 9px;
+}
+/* 一覧の小さな丸いアイコン（名前の1文字目） */
+.small-avatar {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ffe7c9, #cfeff5);
+  color: #66818a;
+  font-weight: 900;
+}
+/* 右端のボタン: 「フォロー中」は水色、「削除」は薄い赤 */
+.following-button,
+.follower-delete-button {
+  border: 0;
+  border-radius: 12px;
+  background: #edf8fa;
+  color: #64a7b5;
+  padding: 7px 9px;
+  font-size: 11px;
+}
+.follower-delete-button {
+  background: #fff5f2;
+  color: #b95f50;
+  border: 1px solid #f1ddd8;
+}
+
+/* 削除確認のダイアログ（「本当に削除しますか？」）: 画面の中央に重ねて表示する */
+.social-delete-modal {
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%); /* 画面の真ん中に寄せる */
+  width: min(280px, calc(100% - 32px));
+  background: white;
+  border: 1px solid #edf1f1;
+  border-radius: 16px;
+  box-shadow: 0 12px 40px rgba(78, 123, 133, 0.18);
+  padding: 18px;
+  z-index: 80; /* モーダルより手前に出す */
+  text-align: center;
+}
+.social-delete-modal p {
+  margin: 0 0 14px;
+  font-weight: 800;
+  color: #4d5d64;
+}
+.social-delete-modal > div {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+}
+.social-delete-modal button {
+  min-width: 68px;
+  border: 0;
+  border-radius: 10px;
+  padding: 9px;
+}
+/* 「はい」はオレンジ、「いいえ」は灰色 */
+.social-delete-modal .confirm {
+  background: #fff0df;
+  color: #c87542;
+}
+.social-delete-modal .cancel {
+  background: #edf2f2;
+  color: #718087;
+}
+
+/* PC幅（700px以上）では、下から出るモーダルを、四隅の丸いカードにする */
+@media (min-width: 700px) {
+  .social-modal {
+    border-radius: 24px;
+  }
+}
+
+/* ───────────────────────────────────────────────────────────
+ * 8. 投稿の削除モード
+ *    「自分の投稿」の「削除」ボタンを押すと、投稿を選んでまとめて削除できる状態になる。
+ * ─────────────────────────────────────────────────────────── */
+
+/* 見出し行: 左に「自分の投稿」、右にボタンを並べる */
+.own-post-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+.own-post-header h3 {
+  margin: 0;
+}
+
+/* 削除関連のボタンの共通の見た目: 薄い赤系の小さなボタン（あとの指定で上書きされる部分もある） */
+.delete-mode-button,
+.cancel-delete,
+.delete-selected,
+.own-post-select,
+.own-post-delete {
+  border: 1px solid #efddd8;
+  height: 28px;
+  width: 35px;
+  border-radius: 10px;
+  background: #fff9f7;
+  color: #b95f50;
+  padding: 7px 9px;
+  font-size: 11px;
+}
+.delete-mode-button,
+.delete-selected-button {
+  border: 1px solid #efddd8;
+  height: 28px;
+  border-radius: 10px;
+  background: #fff9f7;
+  color: #b95f50;
+  padding: 7px 9px;
+  font-size: 11px;
+}
+/* 「削除」（選んだ投稿を消すボタン）: 1つも選んでいないときは、薄くして押せない見た目にする */
+.delete-selected-button {
+  width: 100%;
+  margin: 0 0 10px;
+}
+.delete-selected-button:disabled {
+  opacity: 0.45;
+}
+/* 削除モード中の右側: 「削除」と「キャンセル」を横に並べる */
+.own-delete-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.own-delete-actions .delete-selected-button {
+  width: auto;
+  margin: 0;
+}
+.own-delete-actions .delete-mode-button {
+  margin: 0;
+}
+
+/* 写真の上にチェックマークを重ねるため、写真のボタンを基準位置にする */
+.own-post-image {
+  position: relative;
+}
+.own-post-item .own-post-image {
+  position: relative;
+}
+/* 選んだ投稿の目印: オレンジの枠（outline と border の両方で指定している） */
+.own-post-item.selected {
+  outline: 3px solid var(--orange);
+}
+.own-post-item.selected {
+  border: 3px solid var(--orange);
+}
+/* 写真の右上に出る、丸いチェックマーク（選ぶと「✓」が入る） */
+.own-post-image .post-check {
+  position: absolute;
+  right: 6px;
+  top: 6px;
+  width: 24px;
+  height: 24px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--orange);
+  color: white;
+}
+.post-check {
+  position: absolute;
+  right: 7px;
+  top: 7px;
+  width: 24px;
+  height: 24px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--orange);
+  color: white;
+}
+.own-post-item .post-check {
+  position: absolute;
+  right: 7px;
+  top: 7px;
+  width: 24px;
+  height: 24px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--orange);
+  color: white;
+  font-weight: 800;
+}
+
+/* 削除ボタンの最終的な見た目: 見出し文字より少し大きい、薄い赤のボタン。
+ * !important で、上にある同じクラスの指定を上書きする（ここが最優先） */
+.own-post-header > .delete-mode-button,
+.own-delete-actions .delete-selected-button {
+  min-width: 44px !important;
+  min-height: 28px !important;
+  border: 1px solid #efbfb8 !important;
+  border-radius: 9px !important;
+  background: #ffe9e6 !important;
+  color: #a94f43 !important;
+  padding: 5px 8px !important;
+  font-size: 11px !important;
+  line-height: 1.1 !important;
+  font-weight: 800 !important;
+  box-shadow: none !important;
+}
+
+/* 保存投稿の詳細モーダルの枠線をなくす（Common.css の指定を上書き）。
+ * 中をスクロールしても、右上の「×」ボタンが残るようにする */
+.saved-detail-modal {
+  border: none !important;
+}
+.saved-detail-modal > .modal-close {
+  position: sticky;
+  float: right;
+  top: 12px;
+  margin: 12px 12px -46px 0;
+  z-index: 5;
+}
+
+/* ───────────────────────────────────────────────────────────
+ * 9. 現在は使われていない可能性のあるスタイル
+ *    以前の作りの名残。今の MyPage.jsx では、これらのクラス名は出てこない。
+ *    使われていなければ、消しても見た目は変わらない。
+ *      .logout-button                  … 以前は下部にあったログアウトボタン（今はヘッダーの .header-logout）
+ *      .own-post-item .own-post-delete … 写真の上に出していた削除ボタン（今は削除モードで選ぶ方式）
+ *      .saved-post-card など           … 保存投稿をカードで並べていた頃の部品
+ *      .social-confirm                 … 以前の、一覧の中に出す削除確認（今は .social-delete-modal）
+ * ─────────────────────────────────────────────────────────── */
+
+/* 以前の、マイページ下部のログアウトボタン */
+.logout-button {
+  width: calc(100% - 28px);
+  margin: 4px 14px 90px;
+  border: 1px solid #efddd8;
+  border-radius: 14px;
+  background: #fff9f7;
+  color: #b95f50;
+  padding: 12px;
+  font-weight: 800;
+}
+
+/* 以前の、写真の右下に出していた削除ボタン */
+.own-post-item .own-post-delete {
+  position: absolute;
+  right: 6px;
+  bottom: 6px;
+  border: 0;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.94);
+  color: #b95f50;
+  padding: 6px 8px;
+  font-size: 11px;
+  box-shadow: 0 3px 10px rgba(78, 123, 133, 0.12);
+}
+
+/* 以前の、保存投稿をカード形式で並べていた頃の部品（ホームの投稿カードに近い見た目） */
 .saved-post-card {
   grid-column: 1/-1;
   overflow: hidden;
@@ -414,120 +773,7 @@
   background: #fff4e7;
 }
 
-/* 保存投稿を自分の投稿より上に表示 */
-.mypage-screen .saved-posts {
-  order: 1;
-}
-.mypage-screen .own-posts {
-  order: 2;
-}
-.mypage-screen {
-  display: flex;
-  flex-direction: column;
-}
-
-/* フォロー・フォロワー一覧モーダル: 下から出る縦リスト */
-.social-modal {
-  width: 100%;
-  max-width: 520px;
-  max-height: 82vh;
-  overflow-y: auto;
-  background: white;
-  border-radius: 24px 24px 0 0;
-  padding: 22px 16px 30px;
-  position: relative;
-}
-
-.social-modal h2 {
-  margin: 4px 0 14px;
-  text-align: center;
-}
-
-.social-list {
-  display: flex;
-  flex-direction: column;
-}
-
-.social-list button {
-  min-height: 62px;
-  display: grid;
-  grid-template-columns: 46px 1fr auto;
-  align-items: center;
-  gap: 9px;
-  border: 0;
-  border-bottom: 1px solid #edf2f2;
-  background: white;
-  text-align: left;
-  color: #52636a;
-}
-
-.small-avatar {
-  display: grid;
-  place-items: center;
-  width: 42px;
-  height: 42px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #ffe7c9, #cfeff5);
-  color: #66818a;
-  font-weight: 900;
-}
-
-.social-list button small {
-  color: #64a7b5;
-  background: #edf8fa;
-  border-radius: 12px;
-  padding: 5px 8px;
-}
-
-@media (min-width: 700px) {
-  .social-modal {
-    border-radius: 24px;
-  }
-}
-
-/* 好み項目のラベルと好きな食べ物も濃い文字で読みやすく表示する */
-.mypage-screen .favorite-foods b,
-.mypage-screen .preference-scales b {
-  color: rgb(237, 134, 72);
-  font-weight: 800;
-}
-
-/* マイページヘッダー右側: ログアウトを小さなオレンジボタンで表示 */
-.header-logout {
-  border: 1px solid #efddd8;
-  border-radius: 12px;
-  background: #f2949156;
-  color: #b95f50;
-  padding: 6px 7px;
-  font-size: 11px;
-  white-space: nowrap;
-}
-
-/* フォロー・フォロワー一覧: 名前と操作を右側に揃える */
-.social-item {
-  border-bottom: 1px solid #edf2f2;
-}
-.social-item-main {
-  min-height: 62px;
-  display: grid;
-  grid-template-columns: 46px 1fr auto;
-  align-items: center;
-  gap: 9px;
-}
-.following-button,
-.follower-delete-button {
-  border: 0;
-  border-radius: 12px;
-  background: #edf8fa;
-  color: #64a7b5;
-  padding: 7px 9px;
-  font-size: 11px;
-}
-.follower-delete-button {
-  background: #fff5f2;
-  color: #b95f50;
-  border: 1px solid #f1ddd8;
-}
+/* 以前の、フォロー一覧の中に出していた削除確認 */
 .social-confirm {
   display: grid;
   grid-template-columns: 1fr auto auto;
@@ -557,155 +803,22 @@
   color: #718087;
 }
 
-/* 削除確認モーダル */
-.social-delete-modal {
-  position: fixed;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  width: min(280px, calc(100% - 32px));
-  background: white;
-  border: 1px solid #edf1f1;
-  border-radius: 16px;
-  box-shadow: 0 12px 40px rgba(78, 123, 133, 0.18);
-  padding: 18px;
-  z-index: 80;
-  text-align: center;
-}
-.social-delete-modal p {
-  margin: 0 0 14px;
-  font-weight: 800;
-  color: #4d5d64;
-}
-.social-delete-modal > div {
-  display: flex;
-  justify-content: center;
-  gap: 8px;
-}
-.social-delete-modal button {
-  min-width: 68px;
-  border: 0;
-  border-radius: 10px;
-  padding: 9px;
-}
-.social-delete-modal .confirm {
-  background: #fff0df;
-  color: #c87542;
-}
-.social-delete-modal .cancel {
-  background: #edf2f2;
-  color: #718087;
-}
-
-/* 投稿削除関連 */
-.delete-mode-button,
-.cancel-delete,
-.delete-selected,
-.own-post-select,
-.own-post-delete {
-  border: 1px solid #efddd8;
-  height: 28px;
-  width: 35px;
-  border-radius: 10px;
-  background: #fff9f7;
-  color: #b95f50;
-  padding: 7px 9px;
-  font-size: 11px;
-}
-.own-post-item.selected {
-  outline: 3px solid var(--orange);
-}
-.own-post-image {
-  position: relative;
-}
-.own-post-image .post-check {
-  position: absolute;
-  right: 6px;
-  top: 6px;
-  width: 24px;
-  height: 24px;
+/* 以前の、フォロー一覧の1行をボタンとして作っていた頃の指定 */
+.social-list button {
+  min-height: 62px;
   display: grid;
-  place-items: center;
-  border-radius: 50%;
-  background: var(--orange);
-  color: white;
-}
-
-/* 保存投稿モーダルの枠線をなくし、スクロールしても×を固定表示する */
-.saved-detail-modal {
-  border: none !important;
-}
-.saved-detail-modal > .modal-close {
-  position: sticky;
-  float: right;
-  top: 12px;
-  margin: 12px 12px -46px 0;
-  z-index: 5;
-}
-
-/* 自分の投稿削除モード: 見出し横のボタンと選択チェック */
-.own-post-header {
-  display: flex;
+  grid-template-columns: 46px 1fr auto;
   align-items: center;
-  justify-content: space-between;
-  margin-bottom: 12px;
+  gap: 9px;
+  border: 0;
+  border-bottom: 1px solid #edf2f2;
+  background: white;
+  text-align: left;
+  color: #52636a;
 }
-.own-post-header h3 {
-  margin: 0;
-}
-.delete-mode-button,
-.delete-selected-button {
-  border: 1px solid #efddd8;
-  height: 28px;
-  border-radius: 10px;
-  background: #fff9f7;
-  color: #b95f50;
-  padding: 7px 9px;
-  font-size: 11px;
-}
-.delete-selected-button {
-  width: 100%;
-  margin: 0 0 10px;
-}
-.delete-selected-button:disabled {
-  opacity: 0.45;
-}
-.own-post-item .own-post-image {
-  position: relative;
-}
-.post-check {
-  position: absolute;
-  right: 7px;
-  top: 7px;
-  width: 24px;
-  height: 24px;
-  display: grid;
-  place-items: center;
-  border-radius: 50%;
-  background: var(--orange);
-  color: white;
-}
-
-/* 自分の投稿見出し: 通常は件数を表示し、削除モードは削除・キャンセルを右側へ並べる */
-.own-delete-actions { display:flex; align-items:center; gap:6px; }
-.own-delete-actions .delete-selected-button { width:auto; margin:0; }
-.own-delete-actions .delete-mode-button { margin:0; }
-
-/* 削除モード: 投稿右上へ丸いチェックマークを表示し、選択した投稿だけ濃い枠を付ける */
-.own-post-item.selected { border:3px solid var(--orange); }.own-post-item .post-check { position:absolute; right:7px; top:7px; width:24px; height:24px; display:grid; place-items:center; border-radius:50%; background:var(--orange); color:white; font-weight:800; }
-
-/* 自分の投稿の削除ボタン: 見出し文字より少し大きい薄赤ボタン */
-.own-post-header > .delete-mode-button,
-.own-delete-actions .delete-selected-button {
-  min-width: 44px !important;
-  min-height: 28px !important;
-  border: 1px solid #efbfb8 !important;
-  border-radius: 9px !important;
-  background: #ffe9e6 !important;
-  color: #a94f43 !important;
-  padding: 5px 8px !important;
-  font-size: 11px !important;
-  line-height: 1.1 !important;
-  font-weight: 800 !important;
-  box-shadow: none !important;
+.social-list button small {
+  color: #64a7b5;
+  background: #edf8fa;
+  border-radius: 12px;
+  padding: 5px 8px;
 }

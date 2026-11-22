@@ -1,34 +1,58 @@
 /*
- * 共通CSSの役割
- * :rootの変数はオレンジ・水色・文字色・罫線色を画面全体で再利用するためのデザイントークン。
- * .app-shellは画面全体の最小高さと下ナビゲーション分の余白、淡い背景色を決める。
- * .topbarは画面上部の固定ヘッダー。左右に戻る／ログアウト、中央に画面タイトルを配置する。
- * .bottom-navは画面下部を固定し、ホームとマイページを中央寄せのボタンへ切り替える。
- * .auth-screen/.auth-cardは穏やかなグラデーションと白カードでログイン画面を構成する。
- * .setup-screen/.scale-optionsは好み設定画面と苦手・普通・好きの選択ボタンを整える。
- * .strength-optionsは濃さを薄味・やや薄・普通・やや濃い・濃い味の5項目で横一列表示する。
- * .create-screen/.create-form/.photo-pickerは投稿作成画面の写真選択と入力欄をスマホ幅へ収める。
- * .rating-line/.rating-dotは0〜5を直線上へ並べ、整数点を大きく、0.5点を小さく表示する。
- * .overlayは画面全体を半透明で覆い、モーダルを画面下部または中央へ表示する。
- * .saved-detail-modal/.modal-closeは保存投稿詳細と常に右上へ固定する×ボタンのレイアウトを決める。
- * .saved-detail-modal > .modal-closeはstickyを使いスクロール中も×ボタンを投稿右上へ残す。
+ * =====================================================================
+ * Common.css ― アプリ全体で共通して使うスタイル
+ * =====================================================================
+ *
+ * 【役割】
+ * ホーム・マイページ・ログイン・投稿作成など、複数の画面で使う見た目をまとめたファイル。
+ * App.jsx から読み込まれる。画面ごとの専用の見た目は、別ファイルに分けている。
+ *   Home.css   … ホーム画面（投稿カード、絞り込み欄など）
+ *   MyPage.css … マイページ（プロフィール、フォロー一覧、投稿の削除など）
+ *
+ * 【このファイルの構成】
+ *   1. デザイントークン（色の変数）
+ *   2. 全画面共通の土台（フォント・背景・ボタンの基本）
+ *   3. 共通ヘッダー
+ *   4. 下ナビゲーション
+ *   5. ログイン画面
+ *   6. 好み設定画面
+ *   7. 投稿作成画面（写真選択・星評価・位置情報）
+ *   8. 地図（Leaflet）
+ *   9. モーダル（プロフィール・地図・保存投稿の詳細）
+ *  10. 通知（トースト）・住所表示
+ *  11. 他の人のプロフィール（好みの横並び）
+ *  12. PC幅での調整
+ *
+ * 【色づかいの方針】
+ * オレンジ（--orange）を主役に、水色（--blue）を補助に使う。
+ * 背景は淡い水色がかった白、文字は濃いグレー。
  */
 
-/* 共通カラー: ホーム・マイページ・ログイン画面で共有するオレンジと水色 */
+/* ───────────────────────────────────────────────────────────
+ * 1. デザイントークン
+ *    画面全体で同じ色を使い回すための変数。
+ *    色を変えたいときは、ここを書き換えれば、使っている場所すべてに反映される。
+ *    使い方の例: color: var(--orange-deep);
+ * ─────────────────────────────────────────────────────────── */
 :root {
-  --orange: #f6a85f;
-  --orange-deep: #ed8648;
-  --blue: #72c8d9;
-  --blue-pale: #edf8fa;
-  --ink: #3f4d58;
-  --muted: #87929a;
-  --line: #e6eef0;
+  --orange: #f6a85f; /* オレンジ（ボタンのグラデーションなど） */
+  --orange-deep: #ed8648; /* 濃いオレンジ（強調する文字・選択状態） */
+  --blue: #72c8d9; /* 水色（補助の色） */
+  --blue-pale: #edf8fa; /* 薄い水色（選択状態の背景など） */
+  --ink: #3f4d58; /* 基本の文字色 */
+  --muted: #87929a; /* 補足説明などの薄い文字色 */
+  --line: #e6eef0; /* 枠線・区切り線の色 */
 }
 
-/* 全画面共通レイアウトとフォント */
+/* ───────────────────────────────────────────────────────────
+ * 2. 全画面共通の土台
+ * ─────────────────────────────────────────────────────────── */
+
+/* すべての要素で、枠線と余白を幅や高さに含めて計算する（サイズの指定が直感どおりになる） */
 * {
   box-sizing: border-box;
 }
+/* ページ全体: 余白をなくし、日本語向けのフォントと淡い背景を指定する */
 body {
   margin: 0;
   min-width: 320px;
@@ -37,6 +61,7 @@ body {
   color: #334155;
   background: #f7fbfc;
 }
+/* フォームの部品は、ブラウザ標準のフォントではなく、周りと同じフォントにそろえる */
 button,
 input,
 textarea,
@@ -49,13 +74,18 @@ button {
 #root {
   min-height: 100vh;
 }
+/* アプリ全体の外枠: 画面の高さいっぱいに広げ、下ナビの高さ分だけ下に余白を空ける */
 .app-shell {
   min-height: 100vh;
   padding-bottom: 76px;
   background: #f7fbfc;
 }
 
-/* 共通ヘッダー: 画面タイトルを中央、補助ボタンを左右に配置 */
+/* ───────────────────────────────────────────────────────────
+ * 3. 共通ヘッダー
+ *    左（戻る）・中央（タイトル）・右（ボタン）の3列に並べる。
+ *    スクロールしても上に固定される。
+ * ─────────────────────────────────────────────────────────── */
 .topbar {
   height: 64px;
   display: grid;
@@ -64,9 +94,9 @@ button {
   padding: 0 14px;
   background: rgba(255, 255, 255, 0.96);
   border-bottom: 1px solid #edf1f2;
-  position: sticky;
+  position: sticky; /* スクロールしても上端に残す */
   top: 0;
-  z-index: 20;
+  z-index: 20; /* 他の要素より手前に表示する */
 }
 .topbar h1 {
   margin: 0;
@@ -74,12 +104,15 @@ button {
   font-size: 20px;
   color: #4e5d64;
 }
+/* 右側のボタンを、右端に寄せる */
 .header-right {
   justify-self: end;
 }
+/* 左側に戻るボタンがないとき、タイトルが中央からずれないよう場所だけ確保する */
 .header-spacer {
   width: 1px;
 }
+/* 戻るボタンの「‹」。枠なしで文字だけ表示する */
 .icon-button {
   border: 0;
   background: transparent;
@@ -89,6 +122,7 @@ button {
   color: #7b9ca5;
   text-align: left;
 }
+/* ヘッダー右の「＋ 投稿」ボタン。薄いオレンジの角丸ボタン */
 .create-button,
 .header-save {
   border: 0;
@@ -98,12 +132,15 @@ button {
   padding: 8px 10px;
   font-weight: 800;
   font-size: 12px;
-  white-space: nowrap;
+  white-space: nowrap; /* ボタンの文字を折り返さない */
 }
 
-/* 下ナビゲーション: ホームとマイページを画面下部で切り替える */
+/* ───────────────────────────────────────────────────────────
+ * 4. 下ナビゲーション
+ *    画面の下に固定して、ホームとマイページを切り替える。
+ * ─────────────────────────────────────────────────────────── */
 .bottom-nav {
-  position: fixed;
+  position: fixed; /* スクロールしても下端に固定 */
   z-index: 30;
   left: 0;
   right: 0;
@@ -121,7 +158,7 @@ button {
   background: transparent;
   color: #9ba8ad;
   display: flex;
-  flex-direction: column;
+  flex-direction: column; /* アイコンを上、文字を下に並べる */
   align-items: center;
   justify-content: center;
   gap: 2px;
@@ -133,11 +170,15 @@ button {
 .bottom-nav button small {
   font-size: 11px;
 }
+/* 今開いているタブは、濃いオレンジで目立たせる */
 .bottom-nav button.active {
   color: var(--orange-deep);
 }
 
-/* ログイン画面: オレンジと水色の薄いグラデーションで穏やかな印象を作る */
+/* ───────────────────────────────────────────────────────────
+ * 5. ログイン画面
+ *    オレンジと水色の薄いグラデーションの背景に、白いカードを置く。
+ * ─────────────────────────────────────────────────────────── */
 .auth-screen {
   min-height: 100vh;
   display: flex;
@@ -147,6 +188,7 @@ button {
   padding: 32px 20px 60px;
   background: linear-gradient(145deg, #fffaf4 0%, #effaff 100%);
 }
+/* ロゴマーク「もぐ／ろぐ」。少し傾けて親しみやすくしている */
 .brand-mark {
   width: 82px;
   height: 82px;
@@ -164,6 +206,7 @@ button {
   line-height: 1.1;
   transform: rotate(-3deg);
 }
+/* ロゴの下段「ろぐ」だけ水色にする */
 .brand-mark span:last-child {
   color: var(--blue);
 }
@@ -177,6 +220,7 @@ button {
   margin: 0 0 28px;
   color: #8a9aa1;
 }
+/* 入力欄を載せる白いカード */
 .auth-card {
   width: min(390px, 100%);
   background: rgba(255, 255, 255, 0.94);
@@ -185,6 +229,7 @@ button {
   padding: 24px;
   box-shadow: 0 16px 50px rgba(91, 139, 151, 0.11);
 }
+/* 入力欄のラベル。ラベル文字を上、入力欄を下に縦に並べる（ログイン・投稿作成・好み設定で共通） */
 .auth-card label,
 .create-form label,
 .profile-form label {
@@ -195,6 +240,7 @@ button {
   color: #596770;
   font-weight: 700;
 }
+/* 入力欄の見た目（ログイン・投稿作成・好み設定で共通） */
 .auth-card input,
 .create-form input,
 .create-form textarea,
@@ -206,6 +252,7 @@ button {
   outline: none;
   color: var(--ink);
 }
+/* 入力中（フォーカス時）: 水色の枠線とうっすらした光を出す */
 .auth-card input:focus,
 .create-form input:focus,
 .create-form textarea:focus,
@@ -213,6 +260,7 @@ button {
   border-color: var(--blue);
   box-shadow: 0 0 0 3px rgba(114, 200, 217, 0.13);
 }
+/* メインのボタン（ログイン・保存して完了など）。オレンジのグラデーション */
 .primary-button {
   width: 100%;
   border: 0;
@@ -223,6 +271,7 @@ button {
   font-weight: 800;
   box-shadow: 0 8px 20px rgba(246, 168, 95, 0.22);
 }
+/* 文字だけのボタン（「初めての方はこちら」など） */
 .text-button {
   display: block;
   margin: 14px auto 0;
@@ -231,13 +280,16 @@ button {
   color: #57aabd;
   font-size: 14px;
 }
+/* 入力エラーのメッセージ */
 .form-error {
   color: #cf765e;
   font-size: 13px;
   text-align: center;
 }
 
-/* 初回プロフィール設定画面 */
+/* ───────────────────────────────────────────────────────────
+ * 6. 好み設定画面（初回ログイン時・マイページの「編集」から）
+ * ─────────────────────────────────────────────────────────── */
 .setup-screen {
   min-height: 100vh;
   max-width: 620px;
@@ -246,6 +298,7 @@ button {
   text-align: center;
   background: #fafdfe;
 }
+/* 上の丸いイラスト（🍽️）*/
 .setup-illustration {
   width: 86px;
   height: 86px;
@@ -268,10 +321,12 @@ button {
 .profile-form {
   text-align: left;
 }
+/* 「任意」の小さな表示 */
 .profile-form label span {
   color: var(--blue);
   font-size: 12px;
 }
+/* 辛さ・甘さ・濃さの1項目分のかたまり */
 .scale-row {
   margin: 20px 0;
 }
@@ -279,11 +334,13 @@ button {
   display: block;
   margin-bottom: 9px;
 }
+/* 5段階の選択ボタン。5つを均等な幅で横一列に並べる */
 .scale-options {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   gap: 6px;
 }
+/* 濃さも5項目（薄味・やや薄・普通・やや濃い・濃い味）。文字が長いので少し小さくする */
 .strength-options {
   grid-template-columns: repeat(5, minmax(0, 1fr));
 }
@@ -300,6 +357,7 @@ button {
   padding-inline: 1px;
   font-size: 9px;
 }
+/* 選ばれているボタン: 水色の背景と枠線で目立たせる */
 .scale-options button.selected {
   background: var(--blue-pale);
   border-color: var(--blue);
@@ -307,16 +365,21 @@ button {
   font-weight: 800;
 }
 
-/* 投稿作成画面 */
+/* ───────────────────────────────────────────────────────────
+ * 7. 投稿作成画面
+ * ─────────────────────────────────────────────────────────── */
 .create-screen {
   min-height: 100vh;
   background: #f9fcfc;
 }
+/* フォーム全体: スマホ幅に収め、下の余白で下ナビと重ならないようにする */
 .create-form {
   max-width: 620px;
   margin: auto;
   padding: 18px 16px 80px;
 }
+
+/* 写真を選ぶ枠。点線の枠で「ここを押す」ことを示し、選ぶとプレビューに変わる */
 .photo-picker {
   width: 100%;
   height: 220px;
@@ -332,14 +395,17 @@ button {
 .photo-picker span {
   font-size: 42px;
 }
+/* ファイル選択の本体の入力欄は隠し、枠全体をボタンとして使う */
 .photo-picker input {
   display: none;
 }
 .photo-picker img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: cover; /* 枠いっぱいに、縦横比を保ったまま切り抜いて表示 */
 }
+
+/* 星評価の選択エリア */
 .rating-picker {
   margin: 18px 0;
   padding: 14px 12px;
@@ -350,6 +416,7 @@ button {
   display: block;
   margin-bottom: 8px;
 }
+/* 0〜5の11個の点を横一列に並べる土台 */
 .rating-line {
   position: relative;
   width: 100%;
@@ -358,6 +425,7 @@ button {
   align-items: center;
   height: 46px;
 }
+/* 点をつなぐ、薄い横線 */
 .rating-line::before {
   content: "";
   position: absolute;
@@ -368,6 +436,7 @@ button {
   border-radius: 2px;
   background: #dce8ea;
 }
+/* 点を押すための当たり判定（見た目より広く取って、押しやすくしている） */
 .rating-dot {
   position: relative;
   z-index: 2;
@@ -380,12 +449,14 @@ button {
   background: transparent;
   padding: 0;
 }
+/* 点の見た目（丸） */
 .rating-dot span {
   display: block;
   border-radius: 50%;
   background: #b9cace;
   box-shadow: 0 0 0 3px #f8fbfb;
 }
+/* 整数（0, 1, 2…）は大きい点、0.5刻み（0.5, 1.5…）は小さい点 */
 .rating-dot.integer span {
   width: 14px;
   height: 14px;
@@ -394,9 +465,11 @@ button {
   width: 7px;
   height: 7px;
 }
+/* 選ばれた範囲の点は、オレンジにする */
 .rating-dot.selected span {
   background: var(--orange-deep);
 }
+/* 線の下の「⭐️ 3.5 / 5」の表示。中央に選択中の点数を出す */
 .rating-scale {
   display: grid;
   grid-template-columns: 1fr auto 1fr;
@@ -412,7 +485,7 @@ button {
   text-align: right;
 }
 
-/* 投稿作成: 写真から取得した位置の確認とピン調整 */
+/* 位置情報のエリア（写真から取得した位置の確認と、ピンの調整） */
 .location-picker {
   margin: 18px 0;
 }
@@ -424,14 +497,16 @@ button {
   margin: 0 0 8px;
   border-radius: 10px;
 }
+/* 緯度・経度の数値表示 */
 .gps-coordinate {
   display: block;
   margin: 0 0 8px;
   color: #66818b;
   font-size: 12px;
 }
+/* 以下2つは、地図を指で操作しやすくするための指定 */
 .location-map {
-  touch-action: none;
+  touch-action: none; /* 地図をなぞったとき、ページがスクロールしないようにする */
   cursor: crosshair;
   user-select: none;
 }
@@ -440,7 +515,10 @@ button {
   filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.18));
 }
 
-/* 地図プレビューのサイズと道路表示 */
+/*
+ * 以下3つ（.mini-map / .road / .pin-dot）は、地図を自前で描いていた頃の名残。
+ * 今は Leaflet（下の「8. 地図」）に置き換わっているため、使われていない可能性がある。
+ */
 .location-picker .mini-map {
   position: relative;
   height: 150px;
@@ -469,7 +547,10 @@ button {
   transform: translate(-50%, -85%);
 }
 
-/* 共通 Leaflet / OpenStreetMap 地図 */
+/* ───────────────────────────────────────────────────────────
+ * 8. 地図（Leaflet / OpenStreetMap）
+ *    LocationMap.jsx が表示する地図。使う場所によって高さを変えている。
+ * ─────────────────────────────────────────────────────────── */
 .location-leaflet-map {
   width: 100%;
   height: 220px;
@@ -482,16 +563,20 @@ button {
   height: 100%;
   font-family: inherit;
 }
+/* 地図モーダル用: 大きく表示 */
 .location-leaflet-map.big-location-map {
   height: 330px;
 }
+/* 投稿カードの中などに出す、小さめの地図 */
 .location-leaflet-map.inline-location-map {
   height: 180px;
   margin-top: 8px;
 }
+/* 投稿作成画面用 */
 .location-leaflet-map.create-location-map {
   height: 220px;
 }
+/* 地図上のピン（📍）の見た目 */
 .moglog-location-pin {
   border: 0;
   background: transparent;
@@ -501,24 +586,29 @@ button {
   filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.22));
 }
 
-/* 共通モーダル */
+/* ───────────────────────────────────────────────────────────
+ * 9. モーダル（画面の上に重ねる小窓）
+ * ─────────────────────────────────────────────────────────── */
+
+/* 画面全体を半透明で覆う背景。この上にモーダルを表示し、押すと閉じる */
 .overlay {
   position: fixed;
   z-index: 50;
-  inset: 0;
+  inset: 0; /* 上下左右ぜんぶ 0 = 画面全体 */
   background: rgba(61, 78, 82, 0.28);
   display: flex;
   align-items: center;
   justify-content: center;
-  backdrop-filter: blur(3px);
+  backdrop-filter: blur(3px); /* 後ろの画面を少しぼかす */
 }
+/* モーダル本体（プロフィール・地図・保存投稿の詳細）の共通の見た目。スマホでは下から出る形 */
 .profile-modal,
 .map-modal,
 .saved-detail-modal {
   width: 100%;
   max-width: 520px;
   max-height: 88vh;
-  overflow-y: auto;
+  overflow-y: auto; /* 内容が長いときは、モーダルの中だけスクロールする */
   background: white;
   border-radius: 24px 24px 0 0;
   padding: 26px 24px 36px;
@@ -526,6 +616,7 @@ button {
   position: relative;
   border: 2px solid #b9dde5;
 }
+/* 右上の「×」ボタン */
 .modal-close {
   position: absolute;
   right: 16px;
@@ -538,6 +629,7 @@ button {
   color: #789099;
   font-size: 20px;
 }
+/* プロフィールの大きな丸いアイコン（表示名の1文字目が入る） */
 .large-avatar {
   display: grid;
   place-items: center;
@@ -554,6 +646,7 @@ button {
 .map-modal h2 {
   margin: 6px 0 2px;
 }
+/* 「好きな食べ物」の見出しと、その下の内容（灰色の枠） */
 .profile-modal h3 {
   text-align: left;
   margin: 24px 0 7px;
@@ -564,6 +657,10 @@ button {
   padding: 12px;
   border-radius: 10px;
 }
+/*
+ * 以下4つ（.profile-meter 系）は、好みを棒グラフで表示していた頃の名残。
+ * 今は横3列の表示（下の「11」）に置き換わっているため、使われていない可能性がある。
+ */
 .profile-meter {
   display: grid;
   grid-template-columns: 55px 90px 1fr;
@@ -587,6 +684,8 @@ button {
   background: var(--blue);
   border-radius: 6px;
 }
+
+/* 投稿の詳細モーダル（マイページで投稿を押すと開く）: 写真が上端いっぱいに出るよう、余白を0にする */
 .saved-detail-modal {
   padding: 0;
   text-align: left;
@@ -599,6 +698,7 @@ button {
   object-fit: cover;
   display: block;
 }
+/* 写真の下の、名前・星・店名・本文のエリア */
 .saved-detail-copy {
   padding: 14px 18px 24px;
 }
@@ -609,6 +709,7 @@ button {
   color: #65757b;
   line-height: 1.7;
 }
+/* 一番下の、💬・📍・📁の3つのボタン */
 .saved-actions {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -624,12 +725,14 @@ button {
 .saved-actions button:last-child {
   border-right: 0;
 }
+/* 今開いている表示（コメント・地図）と、保存済みの📁は、オレンジの背景にする */
 .saved-actions button.active-action {
   background: #f7b66f;
 }
 .saved-actions button.active-save-action {
   background: #f7b66f;
 }
+/* 背景をクリーム色にする特別な状態（.active-surface）。1つ目で枠をつけ、2つ目で打ち消している */
 .saved-detail-modal.active-surface {
   background: #fffaf4;
   border: 2px solid #f6b96f;
@@ -637,6 +740,10 @@ button {
 .saved-detail-modal.active-surface {
   border: none;
 }
+/*
+ * 詳細モーダルの「×」ボタンは、中をスクロールしても右上に残す（sticky）。
+ * 写真の上に重ねるため、下側のマイナスの余白で場所を詰めている。
+ */
 .saved-detail-modal > .modal-close {
   position: sticky;
   float: right;
@@ -644,6 +751,7 @@ button {
   margin: 12px 12px -46px 0;
   z-index: 5;
 }
+/* 投稿作成画面の「投稿する」ボタン（.primary-button と同じオレンジのグラデーション） */
 .create-submit-button {
   width: 100%;
   border: 0;
@@ -655,18 +763,24 @@ button {
   margin-top: 4px;
 }
 
+/* ───────────────────────────────────────────────────────────
+ * 10. 通知（トースト）・住所表示
+ * ─────────────────────────────────────────────────────────── */
+
+/* 画面の下に、一瞬だけ出る通知（「ユーザーIDをコピーしました」など） */
 .toast {
   position: fixed;
   z-index: 60;
   left: 50%;
-  bottom: 86px;
-  transform: translateX(-50%);
+  bottom: 86px; /* 下ナビに重ならない高さ */
+  transform: translateX(-50%); /* 左右の中央に寄せる */
   background: #4d6269;
   color: white;
   border-radius: 20px;
   padding: 10px 15px;
   font-size: 12px;
 }
+/* 座標から取得した住所の表示（投稿作成画面の位置情報の下） */
 .reverse-address {
   display: block;
   margin: 0 0 8px;
@@ -674,13 +788,20 @@ button {
   font-size: 12px;
   line-height: 1.5;
 }
-/* 他の人のプロフィール: 辛さ・甘さ・濃さを横3列で表示（オレンジ系） */
+
+/* ───────────────────────────────────────────────────────────
+ * 11. 他の人のプロフィール（投稿者の名前を押すと開くモーダル）
+ *     辛さ・甘さ・濃さを横3列で並べる。オレンジ系の色にしている。
+ *       辛さ    甘さ    濃さ
+ *       普通    普通    普通
+ * ─────────────────────────────────────────────────────────── */
 .profile-preference-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr)); /* 3つを均等な幅で並べる */
   gap: 8px;
   margin-top: 16px;
 }
+/* 1項目分のカード。項目名を上、値を下に縦に並べる */
 .profile-preference-grid > div {
   display: flex;
   flex-direction: column;
@@ -691,10 +812,12 @@ button {
   border-radius: 12px;
   background: #fff5ea;
 }
+/* 項目名（辛さ・甘さ・濃さ） */
 .profile-preference-grid > div > b {
   font-size: 12px;
   color: var(--orange-deep);
 }
+/* 値（普通・やや好きなど）。「やや濃い味」のような長い文字でも折り返さない */
 .profile-preference-grid > div > span {
   font-size: 14px;
   font-weight: 800;
@@ -702,6 +825,10 @@ button {
   white-space: nowrap;
 }
 
+/* ───────────────────────────────────────────────────────────
+ * 12. PC幅（700px以上）での調整
+ *     スマホでは下から出るモーダルを、PCでは中央にカードとして出す（四隅を丸くする）
+ * ─────────────────────────────────────────────────────────── */
 @media (min-width: 700px) {
   .overlay {
     align-items: center;

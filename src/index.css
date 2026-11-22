@@ -1,35 +1,82 @@
+/*
+ * =====================================================================
+ * index.css ― Vite の初期テンプレートに入っている、アプリ全体の基本スタイル
+ * =====================================================================
+ *
+ * 【役割】
+ * 通常は main.jsx で読み込まれ、アプリ全体の土台（文字・背景・見出し・コードの見た目）を決める。
+ * このアプリの見た目の本体は Common.css / Home.css / MyPage.css にあり、
+ * このファイルは「テンプレートの名残」と「それを上書きする指定」が混ざった状態になっている。
+ *
+ * 【読み込み順について】
+ * 同じ強さの指定が重なったときは、後に読み込まれたほうが勝つ。
+ * main.jsx が先にこのファイルを読み込み、そのあと App.jsx が Common.css を読み込むので、
+ * body・button などの共通の指定は、基本的に Common.css 側が優先される。
+ *
+ * 【このファイルの構成】
+ *   1. テンプレートの色と文字の設定（:root）
+ *   2. ダークモードの設定
+ *   3. このアプリ用の上書き（:root）
+ *   4. 基本のリセット（余白・フォーム部品）
+ *   5. アプリの外枠（#root）
+ *   6. 見出し・段落・コードの見た目
+ *
+ * 【注意】
+ *   ・「3. このアプリ用の上書き」が、1の背景色と文字色を書き換えている
+ *   ・ダークモードの設定は、一部だけが効く不揃いな状態になっている（詳しくは2の説明）
+ */
+
+/* ───────────────────────────────────────────────────────────
+ * 1. テンプレートの色と文字の設定
+ *    :root はページ全体の最上位。ここで色の変数（--○○）と、基本の文字の設定を決める。
+ * ─────────────────────────────────────────────────────────── */
 :root {
-  --text: #6b6375;
-  --text-h: #08060d;
-  --bg: #fff;
-  --border: #e5e4e7;
-  --code-bg: #f4f3ec;
-  --accent: #aa3bff;
-  --accent-bg: rgba(170, 59, 255, 0.1);
-  --accent-border: rgba(170, 59, 255, 0.5);
+  /* ── 色の変数（テンプレート用）。Common.css の --orange などとは別のもの ── */
+  --text: #6b6375; /* 本文の文字色 */
+  --text-h: #08060d; /* 見出し（h1・h2）の文字色 */
+  --bg: #fff; /* 背景色 */
+  --border: #e5e4e7; /* 枠線の色 */
+  --code-bg: #f4f3ec; /* コード表示の背景色 */
+  --accent: #aa3bff; /* 強調色（紫） */
+  --accent-bg: rgba(170, 59, 255, 0.1); /* 強調色の薄い背景 */
+  --accent-border: rgba(170, 59, 255, 0.5); /* 強調色の枠線 */
   --social-bg: rgba(244, 243, 236, 0.5);
   --shadow:
     rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
 
-  --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --mono: ui-monospace, Consolas, monospace;
+  /* ── フォントの種類の変数 ── */
+  --sans: system-ui, "Segoe UI", Roboto, sans-serif; /* 通常の文字 */
+  --heading: system-ui, "Segoe UI", Roboto, sans-serif; /* 見出し */
+  --mono: ui-monospace, Consolas, monospace; /* 等幅（コード用） */
 
-  font: 18px/145% var(--sans);
+  /* ── ページ全体の文字の設定 ── */
+  font: 18px/145% var(--sans); /* 文字の大きさ18px、行の高さ145% */
   letter-spacing: 0.18px;
-  color-scheme: light dark;
+  color-scheme: light dark; /* ライト／ダークの両方に対応するとブラウザに伝える */
   color: var(--text);
   background: var(--bg);
-  font-synthesis: none;
+  font-synthesis: none; /* 太字・斜体が無いフォントで、擬似的な太字などを作らない */
   text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
+  -webkit-font-smoothing: antialiased; /* 文字を滑らかに表示（Mac・iPhone向け） */
   -moz-osx-font-smoothing: grayscale;
 
+  /* 画面幅が1024px以下（タブレット・スマホ）では、基本の文字を16pxに小さくする */
   @media (max-width: 1024px) {
     font-size: 16px;
   }
 }
 
+/* ───────────────────────────────────────────────────────────
+ * 2. ダークモードの設定
+ *    端末の設定がダークモードのとき、色の変数を暗い配色に入れ替える。
+ *
+ * 【現状の注意】
+ *  3の :root が背景色と文字色を明るい色で上書きしているため、
+ *  ダークモードでも、ページの背景は明るいまま。
+ *  一方で、変数を使っている見出し（h1・h2）の文字色（--text-h）は、ほぼ白に変わる。
+ *  そのため、ダークモードの端末では、白いカードの上の見出しなどが
+ *  見えにくくなる場合がある。
+ * ─────────────────────────────────────────────────────────── */
 @media (prefers-color-scheme: dark) {
   :root {
     --text: #9ca3af;
@@ -45,13 +92,19 @@
       rgba(0, 0, 0, 0.4) 0 10px 15px -3px, rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
   }
 
+  /* テンプレートのSNSアイコンを、暗い背景で見えるよう白っぽく反転する（このアプリでは使っていない） */
   #social .button-icon {
     filter: invert(1) brightness(2);
   }
 }
 
+/* ───────────────────────────────────────────────────────────
+ * 3. このアプリ用の上書き
+ *    1と同じ :root に、あとから書いている。同じ項目は、こちらが勝つ。
+ *    日本語向けのフォント、濃いグレーの文字色、淡い水色がかった背景に変えている。
+ * ─────────────────────────────────────────────────────────── */
 :root {
-  font-family: 'Hiragino Kaku Gothic ProN', 'Yu Gothic', system-ui, sans-serif;
+  font-family: "Hiragino Kaku Gothic ProN", "Yu Gothic", system-ui, sans-serif;
   color: #334155;
   background: #f7fbfc;
   font-synthesis: none;
@@ -59,16 +112,24 @@
   -webkit-font-smoothing: antialiased;
 }
 
+/* ───────────────────────────────────────────────────────────
+ * 4. 基本のリセット
+ *    （Common.css にも同じ内容がある。あとから読み込まれる Common.css が優先される）
+ * ─────────────────────────────────────────────────────────── */
+
+/* すべての要素で、枠線と余白を幅・高さに含めて計算する */
 * {
   box-sizing: border-box;
 }
 
+/* ページ全体: 余白をなくし、狭い画面でも320px以上、縦は画面の高さ以上にする */
 body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
 }
 
+/* フォームの部品は、ブラウザ標準のフォントではなく、周りと同じフォントにそろえる */
 button,
 input,
 textarea,
@@ -80,6 +141,17 @@ button {
   cursor: pointer;
 }
 
+/* ───────────────────────────────────────────────────────────
+ * 5. アプリの外枠（#root）
+ *    React のアプリは、index.html の <div id="root"> の中に表示される。
+ *    ここがアプリ全体の外枠になる。
+ *
+ * 【見た目への影響】
+ *  ・幅は最大1126pxで、画面の中央に寄せる
+ *  ・広い画面（PC）では、左右に細い縦線（border-inline）が出る
+ *  ・文字は、基本的に中央揃えになる（各画面で個別に左寄せへ変えている箇所が多い）
+ *  ・縦に並べるレイアウト（flex）で、高さは画面いっぱい
+ * ─────────────────────────────────────────────────────────── */
 #root {
   width: 1126px;
   max-width: 100%;
@@ -92,6 +164,11 @@ button {
   box-sizing: border-box;
 }
 
+/* ───────────────────────────────────────────────────────────
+ * 6. 見出し・段落・コードの見た目
+ * ─────────────────────────────────────────────────────────── */
+
+/* h1・h2: 見出しのフォントと太さ、文字色（変数 --text-h）を指定する */
 h1,
 h2 {
   font-family: var(--heading);
@@ -99,6 +176,8 @@ h2 {
   color: var(--text-h);
 }
 
+/* h1: 大きな見出し（56px）。1024px以下では36pxに小さくする。
+ * 画面ごとのタイトル（.topbar h1 など）は、各CSSで別に大きさを決めている */
 h1 {
   font-size: 56px;
   letter-spacing: -1.68px;
@@ -108,6 +187,7 @@ h1 {
     margin: 20px 0;
   }
 }
+/* h2: 中くらいの見出し（24px）。1024px以下では20pxにする */
 h2 {
   font-size: 24px;
   line-height: 118%;
@@ -117,10 +197,12 @@ h2 {
     font-size: 20px;
   }
 }
+/* 段落: ブラウザ標準の上下の余白をなくす */
 p {
   margin: 0;
 }
 
+/* コードの表示（<code>）と、テンプレートのカウンターボタン（.counter）の共通部分: 等幅フォントにする */
 code,
 .counter {
   font-family: var(--mono);
@@ -129,6 +211,7 @@ code,
   color: var(--text-h);
 }
 
+/* コード（<code>）: 薄い背景と余白を付ける。このアプリでは使っていない */
 code {
   font-size: 15px;
   line-height: 135%;
