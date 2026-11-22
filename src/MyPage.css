@@ -651,7 +651,7 @@
  * !important で、上にある同じクラスの指定を上書きする（ここが最優先） */
 .own-post-header > .delete-mode-button,
 .own-delete-actions .delete-selected-button {
-  min-width: 44px !important;
+  min-width: 55px !important;
   min-height: 28px !important;
   border: 1px solid #efbfb8 !important;
   border-radius: 9px !important;
