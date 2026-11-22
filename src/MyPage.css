@@ -520,6 +520,7 @@
 .social-delete-modal .cancel {
   background: #edf2f2;
   color: #718087;
+  white-space: nowrap; /* 「いいえ」の文字が折り返さないようにする */
 }
 
 /* PC幅（700px以上）では、下から出るモーダルを、四隅の丸いカードにする */

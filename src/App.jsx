@@ -250,7 +250,7 @@ function ProfileSetup({ account, onSave }) {
           <input
             value={foods}
             onChange={(e) => setFoods(e.target.value)}
-            placeholder="例：ラーメン"
+            placeholder="例：ラーメン、カレー"
           />
         </label>
         {/* 辛さ・甘さ・濃さの3項目を、同じ形のボタン列として並べる */}
@@ -433,7 +433,7 @@ function CreatePost({ account, onCancel, onCreate }) {
       avatar: account.name[0] || "も",
       rating,
       image,
-      location: location || "場所未設定",
+      location: location || "",
       city,
       comment,
       comments: [],
@@ -468,7 +468,7 @@ function CreatePost({ account, onCancel, onCreate }) {
           <input
             value={location}
             onChange={(e) => setLocation(e.target.value)}
-            placeholder="例：俺の生きる道"
+            placeholder="例：くら寿司"
           />
         </label>
         <label>
@@ -476,7 +476,7 @@ function CreatePost({ account, onCancel, onCreate }) {
           <input
             value={city}
             onChange={(e) => setCity(e.target.value)}
-            placeholder="例：渋谷区"
+            placeholder="例： 茨城県つくば市天久保"
           />
         </label>
         {/* 位置情報: 取得状況のメッセージ、座標、住所、調整用の地図 */}
@@ -512,7 +512,7 @@ function CreatePost({ account, onCancel, onCreate }) {
         {/* 星評価: 0〜5を0.5刻みの点で並べ、押した点までを選択状態にする */}
         <div className="rating-picker">
           <b>評価</b>
-          <p>0~5まで0.5刻みで選択</p>
+          <p>0〜5まで0.5刻みで選択</p>
           <div
             className="rating-line"
             aria-label="評価を0から5まで0.5刻みで選択"
@@ -544,9 +544,15 @@ function CreatePost({ account, onCancel, onCreate }) {
             placeholder="みんなに感想を伝えましょう。"
           />
         </label>
-        <button className="create-submit-button" onClick={submit}>
-          投稿する
-        </button>
+        <div className="create-buttons">
+          <button className="create-cancel-button" onClick={onCancel}>
+            キャンセル
+          </button>
+          <button className="create-submit-button" onClick={submit}>
+            投稿する
+          </button>
+
+        </div>
       </section>
     </main>
   );

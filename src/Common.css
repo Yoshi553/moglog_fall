@@ -753,7 +753,7 @@ button {
 }
 /* 投稿作成画面の「投稿する」ボタン（.primary-button と同じオレンジのグラデーション） */
 .create-submit-button {
-  width: 100%;
+  width: 70%;
   border: 0;
   border-radius: 14px;
   background: linear-gradient(135deg, var(--orange), #f59a68);
@@ -761,6 +761,24 @@ button {
   padding: 14px;
   font-weight: 800;
   margin-top: 4px;
+}
+
+.create-cancel-button {
+  border: 0;
+  border-radius: 16px;
+  background: #f1f5f5;
+  color: var(--muted);
+  padding: 8px 10px;
+  margin: 8px;
+  font-weight: 800;
+  font-size: 12px;
+  white-space: nowrap; /* ボタンの文字を折り返さない */
+}
+
+.create-buttons {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
 }
 
 /* ───────────────────────────────────────────────────────────
