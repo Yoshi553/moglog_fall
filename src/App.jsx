@@ -551,7 +551,6 @@ function CreatePost({ account, onCancel, onCreate }) {
           <button className="create-submit-button" onClick={submit}>
             投稿する
           </button>
-
         </div>
       </section>
     </main>
@@ -1008,6 +1007,16 @@ function App() {
           <button
             className={tab === "home" ? "active" : ""}
             onClick={() => {
+              // すでにホーム画面を見ている場合は、一番上までスクロールして戻る
+              if (tab === "home" && screen === "home") {
+                window.scrollTo({ top: 0, behavior: "smooth" });
+                document
+                  .querySelector(".home-screen")
+                  ?.scrollTo({ top: 0, behavior: "smooth" });
+                return;
+              }
+
+              // 別のタブや画面にいる場合は、これまで通りホームへ切り替える
               setTab("home");
               setScreen("home");
             }}
